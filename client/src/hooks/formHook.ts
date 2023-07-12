@@ -19,7 +19,7 @@ export const useForm = () => {
             .then(data => {
                 setResult(data);
                 if (data.data !== undefined) {
-                    setResultCsv([["Адрес", "Баланс", "Транзакции", "Активных дней / недель / месяцев"], ...data.data.map((v: any) => [String(v.contract), String(v.balance), String(v.nonce), String(v.txTimestamps)])]);
+                    setResultCsv([["#", "Адрес", "Баланс", "Транзакции", "Активных дней / недель / месяцев"], ...data.data.map((v: any, index: number) => [String(index + 1), String(v.contract), String(v.balance), String(v.nonce), String(v.txTimestamps)])]);
                 }
                 setTimeout(() => refScroll.current.scrollIntoView(), 500);
             });

@@ -23,9 +23,8 @@ export const Index: () => JSX.Element = () => {
         <h3>Описание</h3>
         <div style={{ textAlign: "left" }}>Статистика по StarkNet в виде графиков. Новые адреса добавляются каждые 30 минут.<br />
             Данные берутся со <a href="https://starkscan.co" target="_blank" rel="noreferrer">starkscan.co</a>, обновление старой базы данных долгий процесс и происходит раз в 6 часов.</div>
-        <h3>Github</h3>
-        <a href="https://github.com/sm1ck/starkstats" target="_blank" rel="noreferrer">github.com/sm1ck/starkstats</a>
-        <h3>Автор</h3>
-        <a href="https://t.me/web3_coding" target="_blank" rel="noreferrer">t.me/web3_coding</a>
+        <h3>Ссылки</h3>
+        Github: <a href="https://github.com/sm1ck/starkstats" target="_blank" rel="noreferrer">github.com/sm1ck/starkstats</a><br />
+        Автор: <a href="https://t.me/web3_coding" target="_blank" rel="noreferrer">t.me/web3_coding</a>
     </div>;
 };

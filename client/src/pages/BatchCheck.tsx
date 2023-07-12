@@ -25,12 +25,14 @@ export const BatchCheck = () => {
             visible={true}
         /> : <><ul ref={form.refScroll}>
             <li className="table-header">
+                <div className="col col-0">#</div>
                 <div className="col col-1">Адрес</div>
                 <div className="col col-2">Баланс</div>
                 <div className="col col-3">Транзакции</div>
                 <div className="col col-4">Активных дней / недель / месяцев</div>
-            </li>{form.result.data.map((v: any) =>
+            </li>{form.result.data.map((v: any, index: number) =>
                 <li className="table-row" key={id}>
+                    <div className="col col-0" data-label="#">{index + 1}</div>
                     <div className="col col-1" data-label="Адрес">{`${String(v.contract).substring(0, 6)}...${String(v.contract).substring(v.contract.length - 6)}`}</div>
                     <div className="col col-2" data-label="Баланс">{Number(v.balance).toFixed(5)} ETH</div>
                     <div className="col col-3" data-label="Транзакции">{v.nonce}</div>

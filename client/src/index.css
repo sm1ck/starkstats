@@ -173,20 +173,24 @@ li {
   box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
 }
 
+.col-0 {
+  flex-basis: 4%;
+}
+
 .col-1 {
-  flex-basis: 25%;
+  flex-basis: 24%;
 }
 
 .col-2 {
-  flex-basis: 25%;
+  flex-basis: 24%;
 }
 
 .col-3 {
-  flex-basis: 25%;
+  flex-basis: 24%;
 }
 
 .col-4 {
-  flex-basis: 25%;
+  flex-basis: 24%;
 }
 
 .victoryPie {
