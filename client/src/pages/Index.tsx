@@ -22,7 +22,7 @@ export const Index: () => JSX.Element = () => {
             Эти кошельки с нулевым балансом и одной транзакцией исключены из расчета во всех графиках.</div>
         <h3>Описание</h3>
         <div style={{ textAlign: "left" }}>Статистика по StarkNet в виде графиков. Новые адреса добавляются каждые 30 минут.<br />
-            Данные берутся со <a href="https://starkscan.co" target="_blank" rel="noreferrer">starkscan.co</a>, обновление старой базы данных долгий процесс и происходит раз в 6 часов.</div>
+            Данные берутся со <a href="https://starkscan.co" target="_blank" rel="noreferrer">starkscan.co</a>, обновление старой базы данных долгий процесс и происходит раз в день.</div>
         <h3>Ссылки</h3>
         Github: <a href="https://github.com/sm1ck/starkstats" target="_blank" rel="noreferrer">github.com/sm1ck/starkstats</a><br />
         Автор: <a href="https://t.me/web3_coding" target="_blank" rel="noreferrer">t.me/web3_coding</a>

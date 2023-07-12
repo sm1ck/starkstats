@@ -9,10 +9,10 @@ import { getChecksumAddress } from "starknet";
 
 const app = express();
 const port = 5000;
-const slowMode = Boolean(process.env.SLOW_MODE) || false;
-const isParseAll = Boolean(process.env.PARSE_ALL_CONTRACTS) || true;
-const is30mNewInsert = Boolean(process.env.NEW_INSERT_CONTRACTS) || true;
-const isHourlyUpdate = Boolean(process.env.UPDATE_CONTRACTS) || true;
+const slowMode = process.env.SLOW_MODE === "true" ? true : false;
+const isParseAll = process.env.PARSE_ALL_CONTRACTS === "true" ? true : false;
+const is30mNewInsert = process.env.NEW_INSERT_CONTRACTS  === "true" ? true : false;
+const isHourlyUpdate = process.env.UPDATE_CONTRACTS === "true" ? true : false;
 const graphlUrl = process.env.GRAPHQL_URL || ""
 const database = new Database(
   process.env.MONGODB_URL || "mongodb://root:pass@127.0.0.1:27017"
@@ -32,7 +32,7 @@ if (is30mNewInsert) {
 }
 
 if (isHourlyUpdate) {
-  hourlyContractsUpdate(21600, database, proxy, graphlUrl);
+  hourlyContractsUpdate(86400, database, proxy, graphlUrl);
 }
 
 app.use(express.static(path.resolve("../client/build")));
