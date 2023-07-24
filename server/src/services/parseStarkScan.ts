@@ -21,7 +21,7 @@ export const parseStarkScan: (
       method: "POST",
       agent: proxy,
       headers: {
-        authority: "starkscan.stellate.sh",
+        authority: "api.starkscan.co",
         accept: "application/json",
         "accept-language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
         "content-type": "application/json",

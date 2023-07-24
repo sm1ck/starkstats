@@ -30,6 +30,7 @@ export const BatchCheck = () => {
                 <div className="col col-2">Баланс</div>
                 <div className="col col-3">Транзакции</div>
                 <div className="col col-4">Активных дней / недель / месяцев</div>
+                <div className="col col-5">Последняя транзакция</div>
             </li>{form.result.data.map((v: any, index: number) =>
                 <li className="table-row" key={id}>
                     <div className="col col-0" data-label="#">{index + 1}</div>
@@ -37,6 +38,7 @@ export const BatchCheck = () => {
                     <div className="col col-2" data-label="Баланс">{Number(v.balance).toFixed(5)} ETH</div>
                     <div className="col col-3" data-label="Транзакции">{v.nonce}</div>
                     <div className="col col-4" data-label="Активных дней / недель / месяцев">{v.txTimestamps}</div>
+                    <div className="col col-5" data-label="Последняя транзакция">{v.lastTx}</div>
                 </li>
             )}</ul>
             <CSVLink className="button-61" style={{ position: "fixed", bottom: "5px", right: "5px" }} data={form.resultCsv}>Скачать .csv</CSVLink>

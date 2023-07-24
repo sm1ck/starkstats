@@ -209,7 +209,7 @@ export class Cache {
             } catch (e) {
                 console.log("[Error] -> ", e);
             }
-            console.log(`[Wait] -> Задержка ${countTime(timeSec)}до нового парсинга..`);
+            console.log(`[Wait] -> Задержка ${countTime(timeSec, true)}до нового парсинга..`);
             await sleep(timeSec * 1000);
         }
     }

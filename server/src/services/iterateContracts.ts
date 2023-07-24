@@ -17,7 +17,7 @@ export const iterateContracts = async (
     try {
       if (doc.contract === undefined) continue;
       console.log(`[Update] -> Контракт #${i}`);
-      parseSingleContract(doc, database, proxy, parseUrl);
+      parseSingleContract(doc, database, proxy, parseUrl, 10);
     } catch (e) {
       console.log("[Error] -> ", e);
     }
