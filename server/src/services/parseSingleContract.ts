@@ -70,7 +70,7 @@ export const parseSingleContract: (
     console.log("[Error] -> ");
     console.dir(e);
     if (retries > 0) {
-      await sleep(1000);
+      await sleep(60000);
       return parseSingleContract(doc, database, proxy, parseUrl, retries - 1);
     }
   }

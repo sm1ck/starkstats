@@ -22,6 +22,6 @@ export const iterateContracts = async (
       console.log("[Error] -> ", e);
     }
     i++;
-    await sleep(5);
+    await sleep(20);
   }
 };
