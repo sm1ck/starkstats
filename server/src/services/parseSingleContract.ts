@@ -58,7 +58,7 @@ export const parseSingleContract: (
     // push to db
     doc.nonce = nonce;
     doc.balance = balance;
-    let txTimestamps = await parseTxHistory(doc.contract, proxy, parseUrl);
+    let txTimestamps = await parseTxHistory(doc.contract, proxy, parseUrl, 10);
     if (txTimestamps.length > doc.txTimestamps.length) {
       doc.txTimestamps = txTimestamps;
     }

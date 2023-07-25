@@ -1,12 +1,13 @@
 import fetch from "node-fetch";
 import { HttpsProxyAgent } from "https-proxy-agent";
-import { randomIntInRange } from "../utils/common";
+import { randomIntInRange, sleep } from "../utils/common";
 
 export const parseTxHistory: (
   contract: string,
   proxy: HttpsProxyAgent<string> | boolean,
-  parseUrl: string
-) => Promise<Array<number>> = async (contract, proxy, parseUrl) => {
+  parseUrl: string,
+  retries: number
+) => Promise<Array<number>> = async (contract, proxy, parseUrl, retries) => {
   try {
     let chromeV = randomIntInRange(100, 114);
     // first parse
@@ -60,6 +61,10 @@ export const parseTxHistory: (
     return timestamps;
   } catch (e) {
     console.log("[Error] -> ", e);
+    if (retries > 0) {
+      await sleep(60000);
+      return parseTxHistory(contract, proxy, parseUrl, retries - 1)
+    }
     return [];
   }
 };
