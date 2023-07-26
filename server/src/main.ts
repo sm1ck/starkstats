@@ -7,7 +7,6 @@ import { HttpsProxyAgent } from "https-proxy-agent";
 import path from "path";
 import { getChecksumAddress } from "starknet";
 import { countTime } from "./utils/common";
-import Contract from "./database/models/Contract";
 
 const app = express();
 const port = 5000;

@@ -61,10 +61,10 @@ export const parseSingleContract: (
     doc.balance = balance;
     let txTimestamps = await parseTxHistory(doc.contract, proxy, parseUrl, 10);
     let {bridgesVolume, bridgesWithCexVolume} = await parseERC20Events(doc.contract, "StarkGate: ETH", proxy, parseUrl, 10);
-    if (bridgesVolume > 0) {
+    if (bridgesVolume > doc.bridgesVolume) {
       doc.bridgesVolume = bridgesVolume;
     }
-    if (bridgesWithCexVolume > 0) {
+    if (bridgesWithCexVolume > doc.bridgesWithCexVolume) {
       doc.bridgesWithCexVolume = bridgesWithCexVolume;
     }
     if (txTimestamps.length > doc.txTimestamps.length) {

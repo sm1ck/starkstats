@@ -11,7 +11,9 @@ export const BatchCheck = () => {
     return <>
         <h3 className="textCenter">Получите статистику по своим адресам</h3>
         <div className="line-break"></div>
-        <div className="textCenter">Дни, недели и месяцы считаются не как календарные, а как 24 часа, 7 дней и 30 дней</div>
+        <div className="textCenter">Дни, недели и месяцы считаются как календарные</div>
+        <div className="line-break"></div>
+        <div className="textCenter">В список мостов входят StarkGate, Orbiter и LayerSwap, а список бирж входит Okex</div>
         <div className="line-break"></div>
         <textarea ref={form.ref} rows={20} spellCheck={false} style={{ width: "60%", fontSize: "1rem" }} />
         <div className="line-break"></div>

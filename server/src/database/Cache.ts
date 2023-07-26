@@ -90,9 +90,9 @@ export class Cache {
                     let lessThan1_2 = 0;
                     for (let bal of bridgesVolume) {
                         if (bal === 0) continue;
-                        if (bal < 0.005) {
+                        if (bal < 0.01) {
                             lessThan5of1000++;
-                        } else if (bal < 0.01) {
+                        } else if (bal < 0.05) {
                             lessThan1of100++;
                         } else if (bal < 0.1) {
                             lessThan1of10++;
@@ -104,9 +104,9 @@ export class Cache {
                     }
                     for (let bal of bridgesWithCexVolume) {
                         if (bal === 0) continue;
-                        if (bal < 0.005) {
+                        if (bal < 0.01) {
                             lessThan5of1000_2++;
-                        } else if (bal < 0.01) {
+                        } else if (bal < 0.05) {
                             lessThan1of100_2++;
                         } else if (bal < 0.1) {
                             lessThan1of10_2++;
@@ -287,15 +287,34 @@ export class Cache {
         for (let timestamps of timestampsAll) {
             timestamps = timestamps.sort();
             if (timestamps.length <= 0) continue;
-            let lastTimestamp = timestamps[0];
             let count = 1;
             if (timestamps.length == 1) {
                 // only one tx
                 byCounts.push(count);
                 continue;
             }
+            let lastTimestamp = timestamps.shift() as number * 1000;
             for (let timestamp of timestamps) {
-                if (timestamp - lastTimestamp >= delimiter) {
+                timestamp *= 1000;
+                let last, current;
+                switch (delimiter) {
+                    case 86400:
+                        last = new Date(lastTimestamp).getUTCDay();
+                        current = new Date(timestamp).getUTCDay();
+                        break;
+                    case 604800:
+                        last = this.getWeek(lastTimestamp);
+                        current = this.getWeek(timestamp);
+                        break;
+                    case 2592000:
+                        last = new Date(lastTimestamp).getUTCMonth();
+                        current = new Date(timestamp).getUTCMonth();
+                        break;
+                    default:
+                        last = lastTimestamp;
+                        current = timestamp;
+                }
+                if (current != last || ((delimiter === 86400 || delimiter === 604800) && this.compareByMonthAndYear(lastTimestamp, timestamp)) || (delimiter === 2592000 && this.compareByYear(lastTimestamp, timestamp))) {
                     lastTimestamp = timestamp;
                     count++;
                 }
@@ -303,5 +322,32 @@ export class Cache {
             byCounts.push(count);
         }
         return byCounts;
+    }
+
+    private getWeek(time: number) {
+        let onejan = new Date(new Date(time).getUTCFullYear(), 0, 1);
+        let today = new Date(time);
+        let dayOfYear = ((today.getTime() - onejan.getTime() + 86400000) / 86400000);
+        return Math.ceil(dayOfYear / 7);
+    }
+
+    private compareByMonthAndYear(lastTimestamp: number, timestamp: number) {
+        let lastMonth = new Date(lastTimestamp).getUTCMonth();
+        let currentMonth = new Date(timestamp).getUTCMonth();
+        let lastYear = new Date(lastTimestamp).getUTCFullYear();
+        let currentYear = new Date(timestamp).getUTCFullYear();
+        if (lastMonth != currentMonth || lastYear != currentYear) {
+            return true;
+        }
+        return false;
+    }
+
+    private compareByYear(lastTimestamp: number, timestamp: number) {
+        let lastYear = new Date(lastTimestamp).getUTCFullYear();
+        let currentYear = new Date(timestamp).getUTCFullYear();
+        if (lastYear != currentYear) {
+            return true;
+        }
+        return false;
     }
 }
