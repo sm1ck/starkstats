@@ -68,7 +68,7 @@ export const parseStarkScan: (
         console.log(`[Insert] -> ${curr.node.contract_address} имеет тип ${curr.node.implementation_type}, пропускаем..`);
       }
       return acc;
-    }, [])
+    }, []);
     let endCursor = json.data.contracts.pageInfo.endCursor;
     // push to db
     try {

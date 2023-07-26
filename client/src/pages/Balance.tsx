@@ -6,7 +6,7 @@ import { sumPercentWithTotal } from "../utils/common";
 
 export const Balance = () => {
     let [loaded, fetchData] = useFetch("/api/balance");
-    useTitle("Балансы ETH пользователей | Статистика по StarkNet");
+    useTitle("Баланс ETH пользователей | Статистика по StarkNet");
     return !loaded ? <Watch
         height="80"
         width="80"

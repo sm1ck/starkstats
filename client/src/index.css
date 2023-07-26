@@ -157,7 +157,6 @@ li {
   margin-bottom: 25px;
   font-size: 1rem;
   letter-spacing: 0.03em;
-  gap: 2%;
   text-align: center;
 }
 
@@ -178,23 +177,31 @@ li {
 }
 
 .col-1 {
-  flex-basis: 19%;
+  flex-basis: 13.7%;
 }
 
 .col-2 {
-  flex-basis: 19%;
+  flex-basis: 13.7%;
 }
 
 .col-3 {
-  flex-basis: 19%;
+  flex-basis: 13.7%;
 }
 
 .col-4 {
-  flex-basis: 19%;
+  flex-basis: 13.7%;
 }
 
 .col-5 {
-  flex-basis: 19%;
+  flex-basis: 13.7%;
+}
+
+.col-6 {
+  flex-basis: 13.7%;
+}
+
+.col-7 {
+  flex-basis: 13.7%;
 }
 
 .victoryPie {
@@ -234,14 +241,13 @@ li {
   li {
     border-radius: 3px;
     padding: 25px 30px;
-    width: 85%;
-    max-width: 85%;
+    width: 80%;
+    max-width: 80%;
     display: inline-flex;
     justify-content: space-between;
     margin-bottom: 25px;
-    font-size: 0.8rem;
-    letter-spacing: 0.03em;
-    gap: 2%;
+    font-size: 0.53rem;
+    letter-spacing: 0.01em;
     text-align: center;
   }
 
@@ -251,10 +257,10 @@ li {
 
   .col {
     display: flex;
-    padding: 10px 0;
+    padding: 20px 0;
 
     &:before {
-      padding-right: 10px;
+      padding-right: 7px;
       content: attr(data-label);
       flex-basis: 50%;
       text-align: right;

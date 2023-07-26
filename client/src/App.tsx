@@ -5,6 +5,7 @@ import { Balance } from './pages/Balance';
 import { Tx } from "./pages/Tx";
 import { Activity } from "./pages/Activity";
 import { BatchCheck } from './pages/BatchCheck';
+import { Volume } from './pages/Volume';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route index element={<Index />} />
         <Route path="/balance" element={<Balance />} />
         <Route path="/tx" element={<Tx />} />
+        <Route path="/volume" element={<Volume />} />
         <Route path="/activity" element={<Activity />} />
         <Route path="/batchcheck" element={<BatchCheck />} />
       </Route>

@@ -7,6 +7,7 @@ import { HttpsProxyAgent } from "https-proxy-agent";
 import path from "path";
 import { getChecksumAddress } from "starknet";
 import { countTime } from "./utils/common";
+import Contract from "./database/models/Contract";
 
 const app = express();
 const port = 5000;
@@ -60,6 +61,15 @@ app.get("/api/balance", async (req, res) => {
   }
 });
 
+app.get("/api/volume", async (req, res) => {
+  let data = cache.getCacheVolume();
+  if (data.data === undefined) {
+    res.status(500).json(data);
+  } else {
+    res.json(data);
+  }
+});
+
 app.get("/api/activity", async (req, res) => {
   let data = cache.getCacheActivity();
   if (data.data === undefined) {
@@ -70,7 +80,7 @@ app.get("/api/activity", async (req, res) => {
 });
 
 app.get("/api/total", async (req, res) => {
-  let data = cache.getTotalWallets();
+  let data = cache.getCacheTotalWallets();
   if (data.data === undefined) {
     res.status(500).json(data);
   } else {
@@ -103,7 +113,7 @@ app.post("/api/batchcheck", async (req, res) => {
         let weeks = cache.activeCount([v.txTimestamps], 604800);
         let months = cache.activeCount([v.txTimestamps], 2592000);
         let lastTx = v.txTimestamps.length > 0 ? countTime((new Date().getTime() / 1000) - (v.txTimestamps.sort().at(-1) as number), false) : "";
-        return { contract: v.contract, nonce: v.nonce, balance: v.balance, txTimestamps: `${days.length > 0 ? days : 0} / ${weeks.length > 0 ? weeks : 0} / ${months.length > 0 ? months : 0}`, lastTx, index: mapFilter.has(v.contract) ? mapFilter.get(v.contract) as number : 0 }
+        return { contract: v.contract, nonce: v.nonce, balance: v.balance, txTimestamps: `${days.length > 0 ? days : 0} / ${weeks.length > 0 ? weeks : 0} / ${months.length > 0 ? months : 0}`, lastTx, bridgesVolume: v.bridgesVolume, bridgesWithCexVolume: v.bridgesWithCexVolume, index: mapFilter.has(v.contract) ? mapFilter.get(v.contract) as number : 0 }
       }).sort((a, b) => a.index - b.index);
       res.json({ data: result });
     } catch (e) {

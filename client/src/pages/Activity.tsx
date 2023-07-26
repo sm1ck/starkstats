@@ -18,6 +18,7 @@ export const Activity = () => {
     /> : fetchData.data === undefined ? <div>{fetchData.error}</div> :
         <div className="victoryChart">
             <h3 className="textCenter">Статистика уникальных дней по активности пользователей</h3>
+            <div className="textCenter">Дни считаются не как календарные, а как разница в 24 часа</div>
             <div className="textCenter">Наведите курсор на нужную часть графика</div>
             <VictoryChart domainPadding={20} padding={60}>
                 <VictoryScatter
@@ -44,6 +45,7 @@ export const Activity = () => {
                 <VictoryAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
             </VictoryChart>
             <h3 className="textCenter">Статистика уникальных недель по активности пользователей</h3>
+            <div className="textCenter">Недели считаются не как календарные, а как разница в 7 дней</div>
             <div className="textCenter">Наведите курсор на нужную часть графика</div>
             <VictoryChart domainPadding={20} padding={60}>
                 <VictoryScatter
@@ -67,6 +69,7 @@ export const Activity = () => {
                 <VictoryAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
             </VictoryChart>
             <h3 className="textCenter">Статистика уникальных месяцев по активности пользователей</h3>
+            <div className="textCenter">Месяцы считаются не как календарные, а как разница в 30 дней</div>
             <div className="textCenter">Наведите курсор на нужную часть графика</div>
             <VictoryChart domainPadding={20} padding={60}>
                 <VictoryScatter

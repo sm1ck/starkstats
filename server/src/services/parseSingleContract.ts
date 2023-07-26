@@ -5,6 +5,7 @@ import { IContract } from "../database/models/Contract";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { randomIntInRange, sleep } from "../utils/common";
 import { parseTxHistory } from "./parseTxHistory";
+import { parseERC20Events } from "./parseERC20Events";
 
 export const parseSingleContract: (
   doc: mongoose.HydratedDocument<IContract>,
@@ -59,6 +60,13 @@ export const parseSingleContract: (
     doc.nonce = nonce;
     doc.balance = balance;
     let txTimestamps = await parseTxHistory(doc.contract, proxy, parseUrl, 10);
+    let {bridgesVolume, bridgesWithCexVolume} = await parseERC20Events(doc.contract, "StarkGate: ETH", proxy, parseUrl, 10);
+    if (bridgesVolume > 0) {
+      doc.bridgesVolume = bridgesVolume;
+    }
+    if (bridgesWithCexVolume > 0) {
+      doc.bridgesWithCexVolume = bridgesWithCexVolume;
+    }
     if (txTimestamps.length > doc.txTimestamps.length) {
       doc.txTimestamps = txTimestamps;
     }

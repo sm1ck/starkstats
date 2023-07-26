@@ -11,6 +11,7 @@ export class Cache {
     private cacheTx: any = {status: false, error: "Данные еще не загружены.."};
     private cacheActivity: any = {status: false, error: "Данные еще не загружены.."};
     private cacheTotalWallets: any = {status: false, error: "Данные еще не загружены.."};
+    private cacheVolume: any = {status: false, error: "Данные еще не загружены.."};
 
     constructor(public database: Database, public proxy: HttpsProxyAgent<string> | boolean, public parseUrl: string) {
         this.stop = false;
@@ -28,8 +29,12 @@ export class Cache {
         return this.cacheActivity;
     }
 
-    getTotalWallets() {
+    getCacheTotalWallets() {
         return this.cacheTotalWallets;
+    }
+
+    getCacheVolume() {
+        return this.cacheVolume;
     }
 
     updateCacheBalance(cache: any) {
@@ -44,8 +49,12 @@ export class Cache {
         this.cacheActivity = cache;
     }
 
-    updateTotalWallets(cache: any) {
+    updateCacheTotalWallets(cache: any) {
         this.cacheTotalWallets = cache;
+    }
+
+    updateCacheVolume(cache: any) {
+        this.cacheVolume = cache;
     }
 
     stopUpdateOnInterval() {
@@ -65,7 +74,66 @@ export class Cache {
                     // total
                     let totalWallets = await Contract.count({ nonce: { "$ne": 0 } });
                     let totalWalletsFiltered = await Contract.count(this.database.filterOutdated);
-                    this.updateTotalWallets({data: { totalWallets, totalWalletsFiltered }})
+                    this.updateCacheTotalWallets({data: { totalWallets, totalWalletsFiltered }})
+                    // volume
+                    let bridgesVolume = contracts.map((e) => e.bridgesVolume);
+                    let bridgesWithCexVolume = contracts.map((e) => e.bridgesWithCexVolume);
+                    let lessThan5of1000 = 0;
+                    let lessThan1of100 = 0;
+                    let lessThan1of10 = 0;
+                    let lessThan1of2 = 0;
+                    let lessThan1 = 0;
+                    let lessThan5of1000_2 = 0;
+                    let lessThan1of100_2 = 0;
+                    let lessThan1of10_2 = 0;
+                    let lessThan1of2_2 = 0;
+                    let lessThan1_2 = 0;
+                    for (let bal of bridgesVolume) {
+                        if (bal === 0) continue;
+                        if (bal < 0.005) {
+                            lessThan5of1000++;
+                        } else if (bal < 0.01) {
+                            lessThan1of100++;
+                        } else if (bal < 0.1) {
+                            lessThan1of10++;
+                        } else if (bal < 0.5) {
+                            lessThan1of2++;
+                        } else if (typeof bal === "number") {
+                            lessThan1++;
+                        }
+                    }
+                    for (let bal of bridgesWithCexVolume) {
+                        if (bal === 0) continue;
+                        if (bal < 0.005) {
+                            lessThan5of1000_2++;
+                        } else if (bal < 0.01) {
+                            lessThan1of100_2++;
+                        } else if (bal < 0.1) {
+                            lessThan1of10_2++;
+                        } else if (bal < 0.5) {
+                            lessThan1of2_2++;
+                        } else if (typeof bal === "number") {
+                            lessThan1_2++;
+                        }
+                    }
+                    this.updateCacheVolume({
+                        data: {
+                            bridgesVolume: {
+                                lessThan5of1000,
+                                lessThan1of100,
+                                lessThan1of10,
+                                lessThan1of2,
+                                lessThan1,
+                            },
+                            bridgesWithCexVolume: {
+                                lessThan5of1000: lessThan5of1000_2,
+                                lessThan1of100: lessThan1of100_2,
+                                lessThan1of10: lessThan1of10_2,
+                                lessThan1of2: lessThan1of2_2,
+                                lessThan1: lessThan1_2,
+                            }
+                        }
+                    });
                     // tx
                     let uniqNonces = {
                         1: 0,
@@ -91,11 +159,11 @@ export class Cache {
                     this.updateCacheTx({ data: { users_by_tx: uniqNonces } });
                     // balances
                     let balances = contracts.map((e) => e.balance);
-                    let lessThan5of1000 = 0;
-                    let lessThan1of100 = 0;
-                    let lessThan1of10 = 0;
-                    let lessThan1of2 = 0;
-                    let lessThan1 = 0;
+                    lessThan5of1000 = 0;
+                    lessThan1of100 = 0;
+                    lessThan1of10 = 0;
+                    lessThan1of2 = 0;
+                    lessThan1 = 0;
                     for (let bal of balances) {
                         if (bal === 0) continue;
                         if (bal < 0.005) {
