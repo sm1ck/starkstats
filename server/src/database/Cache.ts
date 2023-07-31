@@ -327,7 +327,7 @@ export class Cache {
     private getWeek(time: number) {
         let onejan = new Date(new Date(time).getUTCFullYear(), 0, 1);
         let today = new Date(time);
-        let dayOfYear = ((today.getTime() - onejan.getTime() + 86400000) / 86400000);
+        let dayOfYear = Math.floor((today.getTime() - onejan.getTime()) / 86400000);
         return Math.ceil(dayOfYear / 7);
     }
 
