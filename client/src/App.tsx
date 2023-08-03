@@ -6,6 +6,7 @@ import { Tx } from "./pages/Tx";
 import { Activity } from "./pages/Activity";
 import { BatchCheck } from './pages/BatchCheck';
 import { Volume } from './pages/Volume';
+import './i18n';
 
 function App() {
   return (

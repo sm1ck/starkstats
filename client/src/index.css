@@ -56,6 +56,11 @@ header>a {
   margin-left: 1%;
 }
 
+.language-flag {
+  height: 14px;
+  width: 24px;
+}
+
 header>a:hover {
   text-decoration: none;
   opacity: 0.8;
