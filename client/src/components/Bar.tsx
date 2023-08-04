@@ -13,12 +13,12 @@ export const Bar = () => {
         <>
             <header>
                 <h1><img src="logo.svg" className="logo" /> &nbsp;{t('header')}</h1>
-                <CustomLink to="/">Главная</CustomLink>
-                <CustomLink to="/balance">Балансы</CustomLink>
-                <CustomLink to="/tx">Транзакции</CustomLink>
-                <CustomLink to="/activity">Активность по дням / неделям / месяцам</CustomLink>
-                <CustomLink to="/volume">Объем</CustomLink>
-                <CustomLink to="/batchcheck">Проверить свои адреса</CustomLink>
+                <CustomLink to="/">{t("navMain")}</CustomLink>
+                <CustomLink to="/balance">{t("navBalance")}</CustomLink>
+                <CustomLink to="/tx">{t("navTx")}</CustomLink>
+                <CustomLink to="/activity">{t("navActivity")}</CustomLink>
+                <CustomLink to="/volume">{t("navVolume")}</CustomLink>
+                <CustomLink to="/batchcheck">{t("navBatchcheck")}</CustomLink>
                 <a onClick={handleClick}>
                     <img src={`flag-${i18n.language}.svg.webp`} className="language-flag" />
                 </a>
