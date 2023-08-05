@@ -1,10 +1,14 @@
 import { Watch } from "react-loader-spinner";
 import { useFetch } from "../hooks/fetchHook";
 import { useTitle } from "../hooks/titleHook";
+import { useTranslation } from "react-i18next";
 
 export const Index: () => JSX.Element = () => {
+    const { t } = useTranslation();
     let [loaded, fetchData] = useFetch("/api/total");
-    useTitle("Главная | Статистика по StarkNet");
+
+    useTitle(t("title", { page: t("navMain") }));
+
     return !loaded ? <Watch
         height="80"
         width="80"
@@ -14,17 +18,25 @@ export const Index: () => JSX.Element = () => {
         wrapperStyle={{}}
         visible={true}
     /> : fetchData.data === undefined ? <div>{fetchData.error}</div> : <div style={{ textAlign: "center", fontSize: "1rem" }}>
-        <h3>Всего адресов</h3>
+        <h3>{t("indexTotal")}</h3>
         <h3 style={{ color: "var(--color-bg)" }}>{fetchData.data.totalWallets}</h3>
-        <h3>Всего адресов без учета устаревших кошельков</h3>
+        <h3>{t("indexTotalExcluding")}</h3>
         <h3 style={{ color: "var(--color-bg)" }}>{fetchData.data.totalWalletsFiltered}</h3>
-        <div style={{ textAlign: "left" }}>Данные кошельки можно было создать бесплатно в старой версии StarkNet.<br />
-            Эти кошельки с нулевым балансом и одной транзакцией исключены из расчета во всех графиках.</div>
-        <h3>Описание</h3>
-        <div style={{ textAlign: "left" }}>Статистика по StarkNet в виде графиков. Новые адреса добавляются каждые 30 минут.<br />
-            Данные берутся со <a href="https://starkscan.co" target="_blank" rel="noreferrer">starkscan.co</a>, обновление старой базы данных долгий процесс и происходит раз в день.</div>
-        <h3>Ссылки</h3>
+        <div style={{ textAlign: "left" }}>
+            {t("indexTotalExcludingDetails")}
+            <br />
+            {t("indexTotalExcludingDetails2")}
+        </div>
+        <h3>{t("indexDescription")}</h3>
+        <div style={{ textAlign: "left" }}>
+            {t("indexDescriptionDetails")}
+            <br />
+            {t("indexDescriptionDetails2")}
+            <a href="https://starkscan.co" target="_blank" rel="noreferrer">starkscan.co</a>
+            {t("indexDescriptionDetails3")}
+        </div>
+        <h3>{t("indexLinks")}</h3>
         Github: <a href="https://github.com/sm1ck/starkstats" target="_blank" rel="noreferrer">github.com/sm1ck/starkstats</a><br />
-        Автор: <a href="https://t.me/web3_coding" target="_blank" rel="noreferrer">t.me/web3_coding</a>
+        {t("indexLinksAuthor")}: <a href="https://t.me/web3_coding" target="_blank" rel="noreferrer">t.me/web3_coding</a>
     </div>;
 };
