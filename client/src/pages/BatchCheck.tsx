@@ -4,9 +4,10 @@ import { useTitle } from "../hooks/titleHook";
 import { useId } from "react";
 import { CSVLink } from "react-csv";
 import { useTranslation } from "react-i18next";
+import { replaceRuEngDates } from "../utils/common";
 
 export const BatchCheck = () => {
-    const { t } = useTranslation();
+    let { t, i18n } = useTranslation();
     let form = useForm();
     let id = useId();
 
@@ -50,7 +51,7 @@ export const BatchCheck = () => {
                     <div className="col col-4" data-label="Объем через мост">{Number(v.bridgesVolume).toFixed(5)} ETH</div>
                     <div className="col col-5" data-label="Объем через мост + биржи">{Number(v.bridgesWithCexVolume).toFixed(5)} ETH</div>
                     <div className="col col-6" data-label="Активных дней / недель / месяцев">{v.txTimestamps}</div>
-                    <div className="col col-7" data-label="Последняя транзакция">{v.lastTx}</div>
+                    <div className="col col-7" data-label="Последняя транзакция">{i18n.language === "ru" ? String(v.lastTx) : replaceRuEngDates(String(v.lastTx))}</div>
                 </li>
             )}</ul>
             <CSVLink className="button-61" style={{ position: "fixed", bottom: "5px", right: "5px" }} data={form.resultCsv}>{t("export")}</CSVLink>

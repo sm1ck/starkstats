@@ -50,5 +50,15 @@
     "week": "week",
     "weeks": "weeks",
     "weeks2": "weeks",
-    "languageSwitch": "Switch language to Russian"
+    "languageSwitch": "Switch language to Russian",
+    "csvTabs": [
+        "#",
+        "Address",
+        "Balance",
+        "Transactions",
+        "Volume through bridge",
+        "Volume through bridge + exchanges",
+        "Active days / weeks / months",
+        "Last transaction"
+    ]
 }
