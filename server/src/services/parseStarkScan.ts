@@ -92,7 +92,7 @@ export const parseStarkScan: (
     }
   } catch (e) {
     console.log("[Error] -> ", e);
-    await sleep(1000);
+    await sleep(randomIntInRange(60000, 180000));
     return parseStarkScan(id, minTime, database, proxy, slowMode, parseUrl);
   }
 };

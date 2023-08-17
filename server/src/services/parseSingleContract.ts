@@ -54,6 +54,10 @@ export const parseSingleContract: (
       }),
     });
     let json: any = await parse.json();
+    if (json.data.contract.implementation_type !== "ACCOUNT") {
+      database.deleteContract(doc);
+      return;
+    }
     let nonce = json.data.contract.contract_stats.number_of_transactions;
     let balance = Number(json.data.contract.eth_balance.balance_display);
     // push to db
@@ -78,7 +82,7 @@ export const parseSingleContract: (
     console.log("[Error] -> ");
     console.dir(e);
     if (retries > 0) {
-      await sleep(60000);
+      await sleep(randomIntInRange(60000, 180000));
       return parseSingleContract(doc, database, proxy, parseUrl, retries - 1);
     }
   }

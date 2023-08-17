@@ -1,5 +1,6 @@
 export const sleep: (millis: number) => Promise<void> = async (millis) =>
   new Promise((resolve) => setTimeout(resolve, millis));
+
 export const randomIntInRange: (min: number, max: number) => number = (
   min,
   max
@@ -15,4 +16,4 @@ export const countTime = (seconds: number, isAddSeconds: boolean) => {
   let mnts = Math.floor(seconds / 60);
   seconds -= mnts*60;
   return `${days > 0 ? `${days}д. ` : ""}${hrs > 0 ? `${hrs}ч. ` : ""}${mnts > 0 ? `${mnts}мин. ` : ""}${isAddSeconds && seconds > 0 ? `${seconds}с. ` : ""}`;
-}
+};

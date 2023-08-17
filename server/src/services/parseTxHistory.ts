@@ -62,7 +62,7 @@ export const parseTxHistory: (
   } catch (e) {
     console.log("[Error] -> ", e);
     if (retries > 0) {
-      await sleep(60000);
+      await sleep(randomIntInRange(60000, 180000));
       return parseTxHistory(contract, proxy, parseUrl, retries - 1)
     }
     return [];

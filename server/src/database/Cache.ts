@@ -64,7 +64,8 @@ export class Cache {
     async startUpdateOnInterval(timeSec: number) {
         while (!this.stop) {
             try {
-                let time = Math.round(Date.now() / 1000 - timeSec);
+                // add * 2, fix some bugs
+                let time = Math.round(Date.now() / 1000 - timeSec * 2);
                 await parseStarkScan(null, time, this.database, this.proxy, false, this.parseUrl);
                 iterateContracts(this.database, true, this.proxy, this.parseUrl);
                 let contracts = await this.database.readFilteredContracts(this.database.filterOutdated);
