@@ -58,8 +58,8 @@ export class Database {
     return contracts;
   }
 
-  async readFilteredContracts(filter: any) {
-    let contracts = await Contract.find(filter);
+  async readFilteredContracts(filter: any, limit?: number, skip?: number) {
+    let contracts = limit !== undefined && skip !== undefined ? await Contract.find(filter).limit(limit).skip(skip) : await Contract.find(filter);
     return contracts;
   }
 }

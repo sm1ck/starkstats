@@ -68,13 +68,17 @@ export class Cache {
                 let time = Math.round(Date.now() / 1000 - timeSec * 2);
                 await parseStarkScan(null, time, this.database, this.proxy, false, this.parseUrl);
                 iterateContracts(this.database, true, this.proxy, this.parseUrl);
-                let contracts = await this.database.readFilteredContracts(this.database.filterOutdated);
+                let totalWalletsFiltered = await Contract.count(this.database.filterOutdated);
+                let limit = Math.ceil(totalWalletsFiltered / 1000000);
+                let contracts = await this.database.readFilteredContracts(this.database.filterOutdated, 1000000, 0);
+                for (let i = 1; i < limit; i++) {
+                    contracts = [...contracts, ...await this.database.readFilteredContracts(this.database.filterOutdated, 1000000 * (i + 1), 1000000 * i)];
+                }
                 if (!contracts) {
                     this.cacheBalance, this.cacheTx, this.cacheActivity = { status: false, error: "Api not available" };
                 } else {
                     // total
                     let totalWallets = await Contract.count({ nonce: { "$ne": 0 } });
-                    let totalWalletsFiltered = await Contract.count(this.database.filterOutdated);
                     this.updateCacheTotalWallets({data: { totalWallets, totalWalletsFiltered }})
                     // volume
                     let bridgesVolume = contracts.map((e) => e.bridgesVolume);

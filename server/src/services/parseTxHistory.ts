@@ -15,7 +15,7 @@ export const parseTxHistory: (
       method: "POST",
       agent: proxy,
       headers: {
-        authority: "api.starkscan.co",
+        authority: "starkscan.co",
         accept: "application/json",
         "accept-language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
         "content-type": "application/json",
