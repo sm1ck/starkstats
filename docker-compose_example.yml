@@ -4,35 +4,42 @@ services:
   mongodb:
     image: mongo:latest
     restart: always
+    network_mode: "host"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: "pass"
+      MONGO_INITDB_ROOT_PASSWORD: "<PASS_HERE>"
       MONGO_INITDB_DATABASE: stark
-    ports:
-      - '127.0.0.1:27017:27017'
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - ./mongodb:/data/db
-    networks:
-      - default
+      - ./mongod.conf:/etc/mongod.conf
+    entrypoint: [ "mongod", "--config", "/etc/mongod.conf" ]
   node:
     build: .
     container_name: node
     restart: always
+    network_mode: "host"
     environment:
-      - MONGODB_URL=mongodb://root:pass@mongodb:27017 # mongodb link
-      - GRAPHQL_URL=https://starkscan-v2.stellate.sh/ # url for parse
-      - PROXY= # rotate proxy
-      - SLOW_MODE=false # slow mode for parse new/all contracts
-      - PARSE_ALL_CONTRACTS=false # parse old contracts for db
+      - MONGODB_URL=mongodb://root:<PASS_HERE>@127.0.0.1:27017 # mongodb link
+      - GRAPHQL_URL=http://127.0.0.1:8081/v1/graphql # url for parse
       - NEW_INSERT_CONTRACTS=true # insert new contracts using 30m timer
-      - UPDATE_CONTRACTS=true # update every 1 day all contracts for db
-    ports:
-      - '127.0.0.1:5000:5000'
+      - CORES=10 # num of cores for cache workers
     volumes:
       - ./client:/node/client
       - ./server:/node/server
-    networks:
-      - default
-networks:
-  default:
+  parser:
+    build:
+      context: .
+      dockerfile: Dockerfile2
+    container_name: parser
+    restart: always
+    network_mode: "host"
+    environment:
+      - MONGODB_URL=mongodb://root:<PASS_HERE>>@127.0.0.1:27017 # mongodb link
+      - GRAPHQL_URL=http://127.0.0.1:8081/v1/graphql # url for parse
+      - SLOW_MODE=false # slow mode for parse new/all contracts
+      - PARSE_ALL_CONTRACTS=false # parse old contracts for db
+      - NEW_INSERT_CONTRACTS=true # insert new contracts using 30m timer
+      - UPDATE_CONTRACTS=false # update every 1 day all contracts for db
+    volumes:
+      - ./parser:/node/parser

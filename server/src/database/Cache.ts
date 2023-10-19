@@ -1,20 +1,16 @@
-import { countTime, sleep } from "../utils/common";
-import { parseStarkScan } from "../services/parseStarkScan";
-import { iterateContracts } from "../services/iterateContracts";
-import { Database } from "./Database";
-import { HttpsProxyAgent } from "https-proxy-agent";
-import Contract from "./models/Contract";
+import { Worker } from 'worker_threads';
+import { DateTime } from "luxon";
+import Database from "./Database";
+import { countTime, sleep, deepMergeSum } from "../utils/common";
 
-export class Cache {
-    private stop: boolean;
+class Cache {
     private cacheBalance: any = {status: false, error: "Данные еще не загружены.."};
     private cacheTx: any = {status: false, error: "Данные еще не загружены.."};
     private cacheActivity: any = {status: false, error: "Данные еще не загружены.."};
     private cacheTotalWallets: any = {status: false, error: "Данные еще не загружены.."};
     private cacheVolume: any = {status: false, error: "Данные еще не загружены.."};
 
-    constructor(public database: Database, public proxy: HttpsProxyAgent<string> | boolean, public parseUrl: string) {
-        this.stop = false;
+    constructor(public database: Database, public parseUrl: string) {
     }
 
     getCacheBalance() {
@@ -57,234 +53,131 @@ export class Cache {
         this.cacheVolume = cache;
     }
 
-    stopUpdateOnInterval() {
-        this.stop = true;
-    }
-
-    async startUpdateOnInterval(timeSec: number) {
-        while (!this.stop) {
-            try {
-                // add * 2, fix some bugs
-                let time = Math.round(Date.now() / 1000 - timeSec * 2);
-                await parseStarkScan(null, time, this.database, this.proxy, false, this.parseUrl);
-                iterateContracts(this.database, true, this.proxy, this.parseUrl);
-                let totalWalletsFiltered = await Contract.count(this.database.filterOutdated);
-                let limit = Math.ceil(totalWalletsFiltered / 1000000);
-                let contracts = await this.database.readFilteredContracts(this.database.filterOutdated, 1000000, 0);
-                for (let i = 1; i < limit; i++) {
-                    contracts = [...contracts, ...await this.database.readFilteredContracts(this.database.filterOutdated, 1000000 * (i + 1), 1000000 * i)];
+    async startUpdateOnInterval(timeSec: number, cores: number): Promise<void> {
+        let startTime = performance.now();
+        console.log("[Cache] -> Начали обновлять кеш..");
+        await new Promise((resolve) => {
+            let worker = new Worker(new URL('../services/cacheUpdateWorker.ts', import.meta.url), { workerData: { database: this.database, limit: 0, skip: 0, isCache: true }, execArgv: ['--loader', 'ts-node/esm/transpile-only'] });
+            worker.on("message", (msg) => {
+                if (msg.hasOwnProperty("totalWallets")) {
+                    this.updateCacheTotalWallets(msg.totalWallets);
                 }
-                if (!contracts) {
-                    this.cacheBalance, this.cacheTx, this.cacheActivity = { status: false, error: "Api not available" };
-                } else {
-                    // total
-                    let totalWallets = await Contract.count({ nonce: { "$ne": 0 } });
-                    this.updateCacheTotalWallets({data: { totalWallets, totalWalletsFiltered }})
-                    // volume
-                    let bridgesVolume = contracts.map((e) => e.bridgesVolume);
-                    let bridgesWithCexVolume = contracts.map((e) => e.bridgesWithCexVolume);
-                    let lessThan5of1000 = 0;
-                    let lessThan1of100 = 0;
-                    let lessThan1of10 = 0;
-                    let lessThan1of2 = 0;
-                    let lessThan1 = 0;
-                    let lessThan5of1000_2 = 0;
-                    let lessThan1of100_2 = 0;
-                    let lessThan1of10_2 = 0;
-                    let lessThan1of2_2 = 0;
-                    let lessThan1_2 = 0;
-                    for (let bal of bridgesVolume) {
-                        if (bal === 0) continue;
-                        if (bal < 0.01) {
-                            lessThan5of1000++;
-                        } else if (bal < 0.05) {
-                            lessThan1of100++;
-                        } else if (bal < 0.1) {
-                            lessThan1of10++;
-                        } else if (bal < 0.5) {
-                            lessThan1of2++;
-                        } else if (typeof bal === "number") {
-                            lessThan1++;
-                        }
-                    }
-                    for (let bal of bridgesWithCexVolume) {
-                        if (bal === 0) continue;
-                        if (bal < 0.01) {
-                            lessThan5of1000_2++;
-                        } else if (bal < 0.05) {
-                            lessThan1of100_2++;
-                        } else if (bal < 0.1) {
-                            lessThan1of10_2++;
-                        } else if (bal < 0.5) {
-                            lessThan1of2_2++;
-                        } else if (typeof bal === "number") {
-                            lessThan1_2++;
-                        }
-                    }
-                    this.updateCacheVolume({
-                        data: {
-                            bridgesVolume: {
-                                lessThan5of1000,
-                                lessThan1of100,
-                                lessThan1of10,
-                                lessThan1of2,
-                                lessThan1,
-                            },
-                            bridgesWithCexVolume: {
-                                lessThan5of1000: lessThan5of1000_2,
-                                lessThan1of100: lessThan1of100_2,
-                                lessThan1of10: lessThan1of10_2,
-                                lessThan1of2: lessThan1of2_2,
-                                lessThan1: lessThan1_2,
-                            }
-                        }
-                    });
-                    // tx
-                    let uniqNonces = {
-                        1: 0,
-                        5: 0,
-                        10: 0,
-                        20: 0,
-                        30: 0,
-                      };
-                    for (let contract of contracts) {
-                        if (contract.nonce === 0) continue;
-                        if (contract.nonce <= 5) {
-                            uniqNonces[1]++;
-                        } else if (contract.nonce <= 10) {
-                            uniqNonces[5]++;
-                        } else if (contract.nonce <= 20) {
-                            uniqNonces[10]++;
-                        } else if (contract.nonce <= 30) {
-                            uniqNonces[20]++;
-                        } else if (typeof contract.nonce === "number") {
-                            uniqNonces[30]++;
-                        }
-                    }
-                    this.updateCacheTx({ data: { users_by_tx: uniqNonces } });
-                    // balances
-                    let balances = contracts.map((e) => e.balance);
-                    lessThan5of1000 = 0;
-                    lessThan1of100 = 0;
-                    lessThan1of10 = 0;
-                    lessThan1of2 = 0;
-                    lessThan1 = 0;
-                    for (let bal of balances) {
-                        if (bal === 0) continue;
-                        if (bal < 0.005) {
-                            lessThan5of1000++;
-                        } else if (bal < 0.01) {
-                            lessThan1of100++;
-                        } else if (bal < 0.1) {
-                            lessThan1of10++;
-                        } else if (bal < 0.5) {
-                            lessThan1of2++;
-                        } else if (typeof bal === "number") {
-                            lessThan1++;
-                        }
-                    }
-                    this.updateCacheBalance({
-                        data: {
-                            lessThan5of1000,
-                            lessThan1of100,
-                            lessThan1of10,
-                            lessThan1of2,
-                            lessThan1,
-                        }
-                    });
-                    // activity by days / weeks / months
-                    let timestampsAll = contracts.map((e) => e.txTimestamps);
-                    let countedDays = this.activeCount(timestampsAll, 86400);
-                    let uniqDays = {
-                        1: 0,
-                        2: 0,
-                        3: 0,
-                        4: 0,
-                        5: 0,
-                        10: 0,
-                        20: 0,
-                        30: 0,
-                        "all": 0
-                      };
-                    for (let userDays of countedDays) {
-                        if (userDays <= 1) {
-                            uniqDays[1]++;
-                        } else if (userDays <= 2) {
-                            uniqDays[2]++;
-                        } else if (userDays <= 3) {
-                            uniqDays[3]++;
-                        } else if (userDays <= 4) {
-                            uniqDays[4]++;
-                        } else if (userDays <= 5) {
-                            uniqDays[5]++;
-                        } else if (userDays <= 9) {
-                            uniqDays[10]++;
-                        } else if (userDays <= 19) {
-                            uniqDays[20]++;
-                        } else if (userDays <= 29) {
-                            uniqDays[30]++;
-                        } else if (typeof userDays === "number") {
-                            uniqDays["all"]++;
-                        }
-                    }
-                    timestampsAll = contracts.map((e) => e.txTimestamps);
-                    let countedWeeks = this.activeCount(timestampsAll, 604800);
-                    let uniqWeeks = {
-                        1: 0,
-                        2: 0,
-                        3: 0,
-                        4: 0,
-                        5: 0,
-                        "all": 0
-                      };
-                    for (let userWeeks of countedWeeks) {
-                        if (userWeeks <= 1) {
-                            uniqWeeks[1]++;
-                        } else if (userWeeks <= 2) {
-                            uniqWeeks[2]++;
-                        } else if (userWeeks <= 3) {
-                            uniqWeeks[3]++;
-                        } else if (userWeeks <= 4) {
-                            uniqWeeks[4]++;
-                        } else if (userWeeks <= 5) {
-                            uniqWeeks[5]++;
-                        } else if (typeof userWeeks === "number") {
-                            uniqWeeks["all"]++;
-                        }
-                    }
-                    timestampsAll = contracts.map((e) => e.txTimestamps);
-                    let countedMonths = this.activeCount(timestampsAll, 2592000);
-                    let uniqMonths = {
-                        1: 0,
-                        2: 0,
-                        3: 0,
-                        4: 0,
-                        5: 0,
-                        "all": 0
-                      };
-                    for (let userMonths of countedMonths) {
-                        if (userMonths <= 1) {
-                            uniqMonths[1]++;
-                        } else if (userMonths <= 2) {
-                            uniqMonths[2]++;
-                        } else if (userMonths <= 3) {
-                            uniqMonths[3]++;
-                        } else if (userMonths <= 4) {
-                            uniqMonths[4]++;
-                        } else if (userMonths <= 5) {
-                            uniqMonths[5]++;
-                        } else if (typeof userMonths === "number") {
-                            uniqMonths["all"]++;
-                        }
-                    }
-                    this.updateCacheActivity({ data: { users_by_days: uniqDays, users_by_weeks: uniqWeeks, users_by_months: uniqMonths } });
+            });
+            worker.on("error", (e) => console.log("[Error] -> ", e));
+            worker.on("exit", async _ => {
+                resolve(true);
+            });
+        });
+        let limit = Math.floor(this.getCacheTotalWallets().data.totalWalletsFiltered / cores);
+        let skip = 0;
+        let promises = [];
+        let volume = {
+            data: {
+                bridgesVolume: {
+                    lessThan5of1000: 0,
+                    lessThan1of100: 0,
+                    lessThan1of10: 0,
+                    lessThan1of2: 0,
+                    lessThan1: 0,
+                },
+                bridgesWithCexVolume: {
+                    lessThan5of1000: 0,
+                    lessThan1of100: 0,
+                    lessThan1of10: 0,
+                    lessThan1of2: 0,
+                    lessThan1: 0,
                 }
-            } catch (e) {
-                console.log("[Error] -> ", e);
             }
-            console.log(`[Wait] -> Задержка ${countTime(timeSec, true)}до нового парсинга..`);
-            await sleep(timeSec * 1000);
+        };
+        let tx = {
+            data: {
+                users_by_tx: {
+                    1: 0,
+                    5: 0,
+                    10: 0,
+                    20: 0,
+                    30: 0,
+                }
+            }
+        };
+        let balance = {
+            data: {
+                lessThan5of1000: 0,
+                lessThan1of100: 0,
+                lessThan1of10: 0,
+                lessThan1of2: 0,
+                lessThan1: 0,
+            }
+        };
+        let activity = {
+            data: {
+                users_by_days: {
+                    1: 0,
+                    2: 0,
+                    3: 0,
+                    4: 0,
+                    5: 0,
+                    10: 0,
+                    20: 0,
+                    30: 0,
+                    "all": 0
+                },
+                users_by_weeks: {
+                    1: 0,
+                    2: 0,
+                    3: 0,
+                    4: 0,
+                    5: 0,
+                    "all": 0
+                },
+                users_by_months: {
+                    1: 0,
+                    2: 0,
+                    3: 0,
+                    4: 0,
+                    5: 0,
+                    "all": 0
+                }
+            }
+        };
+        for (let i = 0; i < cores; i++) {
+            if (i === cores - 1) {
+                limit = 0;
+            }
+            promises.push(new Promise((resolve) => {
+                let worker = new Worker(new URL('../services/cacheUpdateWorker.ts', import.meta.url), { workerData: { database: this.database, limit, skip, isCache: false }, execArgv: ['--loader', 'ts-node/esm/transpile-only'] });
+                worker.on("message", (msg) => {
+                    if (msg.hasOwnProperty("volume")) {
+                        volume.data.bridgesVolume = deepMergeSum(msg.volume.data.bridgesVolume, volume.data.bridgesVolume) as any;
+                        volume.data.bridgesWithCexVolume = deepMergeSum(msg.volume.data.bridgesWithCexVolume, volume.data.bridgesWithCexVolume) as any;
+                    } else if (msg.hasOwnProperty("tx")) {
+                        tx.data.users_by_tx = deepMergeSum(msg.tx.data.users_by_tx, tx.data.users_by_tx) as any;
+                    } else if (msg.hasOwnProperty("balance")) {
+                        balance.data = deepMergeSum(msg.balance.data, balance.data) as any;
+                    } else if (msg.hasOwnProperty("activity")) {
+                        activity.data.users_by_days = deepMergeSum(msg.activity.data.users_by_days, activity.data.users_by_days) as any;
+                        activity.data.users_by_weeks = deepMergeSum(msg.activity.data.users_by_weeks, activity.data.users_by_weeks) as any;
+                        activity.data.users_by_months = deepMergeSum(msg.activity.data.users_by_months, activity.data.users_by_months) as any;
+                    }
+                });
+                worker.on("error", (e) => console.log("[Error] -> ", e));
+                worker.on("exit", async _ => {
+                    resolve(true);
+                });
+            }));
+            skip += limit;
         }
+        await Promise.allSettled(promises);
+        this.updateCacheVolume(volume);
+        this.updateCacheTx(tx);
+        this.updateCacheBalance(balance);
+        this.updateCacheActivity(activity);
+        let endTime = performance.now();
+        let executionTime = endTime - startTime;
+        console.log(`[Cache] -> Кеш обновлен за ${countTime(Math.floor(executionTime / 1000), true)}..`);
+        console.log(`[Cache] -> Задержка ${countTime(timeSec, true)}до нового парсинга..`);
+        await sleep(timeSec * 1000);
+        return this.startUpdateOnInterval(timeSec, cores);
     }
 
     activeCount(timestampsAll: number[][], delimiter: number) {
@@ -302,26 +195,36 @@ export class Cache {
             for (let timestamp of timestamps) {
                 timestamp *= 1000;
                 let last, current;
+                let lastDate = DateTime.fromMillis(lastTimestamp, { zone: "utc" });
+                let currentDate = DateTime.fromMillis(timestamp, { zone: "utc" });
                 switch (delimiter) {
                     case 86400:
-                        last = new Date(lastTimestamp).getUTCDay();
-                        current = new Date(timestamp).getUTCDay();
+                        last = lastDate.day;
+                        current = currentDate.day;
+                        if (current != last || this.compareByMonthAndYear(lastDate.month, currentDate.month, lastDate.year, currentDate.year)) {
+                            lastTimestamp = timestamp;
+                            count++;
+                        }
                         break;
                     case 604800:
-                        last = this.getWeek(lastTimestamp);
-                        current = this.getWeek(timestamp);
+                        last = this.getWeek(lastDate);
+                        current = this.getWeek(currentDate);
+                        if (current != last || this.compareByMonthAndYear(lastDate.month, currentDate.month, lastDate.year, currentDate.year)) {
+                            lastTimestamp = timestamp;
+                            count++;
+                        }
                         break;
                     case 2592000:
-                        last = new Date(lastTimestamp).getUTCMonth();
-                        current = new Date(timestamp).getUTCMonth();
+                        last = lastDate.month;
+                        current = currentDate.month;
+                        if (current != last || this.compareByYear(lastDate.year, currentDate.year)) {
+                            lastTimestamp = timestamp;
+                            count++;
+                        }
                         break;
                     default:
                         last = lastTimestamp;
                         current = timestamp;
-                }
-                if (current != last || ((delimiter === 86400 || delimiter === 604800) && this.compareByMonthAndYear(lastTimestamp, timestamp)) || (delimiter === 2592000 && this.compareByYear(lastTimestamp, timestamp))) {
-                    lastTimestamp = timestamp;
-                    count++;
                 }
             }
             byCounts.push(count);
@@ -329,30 +232,25 @@ export class Cache {
         return byCounts;
     }
 
-    private getWeek(time: number) {
-        let onejan = new Date(new Date(time).getUTCFullYear(), 0, 1);
-        let today = new Date(time);
-        let dayOfYear = Math.floor((today.getTime() - onejan.getTime()) / 86400000);
+    private getWeek(date: DateTime) {
+        let onejan = DateTime.utc(date.year, 1, 1);
+        let dayOfYear = Math.floor((date.toMillis() - onejan.toMillis()) / 86400000);
         return Math.ceil(dayOfYear / 7);
     }
 
-    private compareByMonthAndYear(lastTimestamp: number, timestamp: number) {
-        let lastMonth = new Date(lastTimestamp).getUTCMonth();
-        let currentMonth = new Date(timestamp).getUTCMonth();
-        let lastYear = new Date(lastTimestamp).getUTCFullYear();
-        let currentYear = new Date(timestamp).getUTCFullYear();
+    private compareByMonthAndYear(lastMonth: number, currentMonth: number, lastYear: number, currentYear: number) {
         if (lastMonth != currentMonth || lastYear != currentYear) {
             return true;
         }
         return false;
     }
 
-    private compareByYear(lastTimestamp: number, timestamp: number) {
-        let lastYear = new Date(lastTimestamp).getUTCFullYear();
-        let currentYear = new Date(timestamp).getUTCFullYear();
+    private compareByYear(lastYear: number, currentYear: number) {
         if (lastYear != currentYear) {
             return true;
         }
         return false;
     }
 }
+
+export default Cache;

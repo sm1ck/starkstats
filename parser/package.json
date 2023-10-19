@@ -1,0 +1,25 @@
+{
+    "name": "parser",
+    "version": "1.0.0",
+    "description": "",
+    "main": "main.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "node --max-old-space-size=16384 --experimental-specifier-resolution=node --loader ts-node/esm ./src/main.ts",
+        "lint": "eslint . --ext .ts"
+    },
+    "author": "",
+    "license": "ISC",
+    "type": "module",
+    "devDependencies": {
+        "@types/node": "^20.8.6",
+        "@types/node-fetch": "^2.6.4",
+        "ts-node": "^10.9.1",
+        "tslib": "^2.5.3"
+    },
+    "dependencies": {
+        "mongoose": "^7.3.2",
+        "node-fetch": "^3.3.1",
+        "starknet": "^5.14.1"
+    }
+}

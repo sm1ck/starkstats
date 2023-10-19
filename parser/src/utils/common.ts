@@ -18,17 +18,13 @@ export const countTime = (seconds: number, isAddSeconds: boolean) => {
   return `${days > 0 ? `${days} д. ` : ""}${hrs > 0 ? `${hrs} ч. ` : ""}${mnts > 0 ? `${mnts} мин. ` : ""}${isAddSeconds && seconds > 0 ? `${seconds} с. ` : ""}`;
 };
 
-interface ParseObject {
-  [index: string]: any;
-}
+export const convertToNormalAddress = (address: string) => `0${address.slice(1)}`.toLowerCase();
 
-export const deepMergeSum = (obj1: ParseObject, obj2: ParseObject) => {
-  return Object.keys(obj1).reduce((acc, key) => {
-    if (typeof obj2[key] === 'object') {
-      acc[key] = deepMergeSum(obj1[key], obj2[key]);
-    } else if (obj2.hasOwnProperty(key) && !isNaN(parseFloat(obj2[key]))) {
-      acc[key] = obj1[key] + obj2[key]
-    }
-    return acc;
-  }, {} as ParseObject);
-};
+export const convertToGraphQlAddress = (address: string) => `\\\\${address.slice(1)}`;
+
+export const formatBalance = (qty: bigint, decimals: number): number => {
+  let balance = String("0").repeat(decimals) + qty.toString();
+  let rightCleaned = balance.slice(-decimals).replace(/(\d)0+$/gm, '$1');
+  let leftCleaned = BigInt(balance.slice(0, balance.length - decimals)).toString();
+  return +(leftCleaned + "." + rightCleaned);
+}

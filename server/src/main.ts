@@ -1,39 +1,22 @@
 import express from "express";
-import { Database } from "./database/Database";
-import { Cache } from "./database/Cache";
-import { parseStarkScan } from "./services/parseStarkScan";
-import { hourlyContractsUpdate } from "./services/hourlyContractsUpdate";
-import { HttpsProxyAgent } from "https-proxy-agent";
-import path from "path";
 import { getChecksumAddress } from "starknet";
+import path from "path";
+import Database from "./database/Database";
+import Cache from "./database/Cache";
 import { countTime } from "./utils/common";
 
 const app = express();
 const port = 5000;
-const slowMode = process.env.SLOW_MODE === "true" ? true : false;
-const isParseAll = process.env.PARSE_ALL_CONTRACTS === "true" ? true : false;
-const is30mNewInsert = process.env.NEW_INSERT_CONTRACTS  === "true" ? true : false;
-const isHourlyUpdate = process.env.UPDATE_CONTRACTS === "true" ? true : false;
+const is30mNewInsert = process.env.NEW_INSERT_CONTRACTS === "true" ? true : false;
 const graphlUrl = process.env.GRAPHQL_URL || ""
+const cores = process.env.CORES || 6
 const database = new Database(
   process.env.MONGODB_URL || "mongodb://root:pass@127.0.0.1:27017"
 );
-const proxy =
-  process.env.PROXY !== undefined
-    ? new HttpsProxyAgent(process.env.PROXY)
-    : false;
-const cache = new Cache(database, proxy, graphlUrl);
-
-if (isParseAll) {
-  parseStarkScan(null, null, database, proxy, slowMode, graphlUrl);
-}
+const cache = new Cache(database, graphlUrl);
 
 if (is30mNewInsert) {
-  cache.startUpdateOnInterval(1800);
-}
-
-if (isHourlyUpdate) {
-  hourlyContractsUpdate(86400, database, proxy, graphlUrl);
+  cache.startUpdateOnInterval(300, +cores);
 }
 
 app.use(express.static(path.resolve("../client/build")));
@@ -126,6 +109,6 @@ app.get("*", (req, res) => {
 }
 );
 
-app.listen(port, () => {
+app.listen(port, "localhost", () => {
   console.log(`Listening on port ${port}..`);
 });
