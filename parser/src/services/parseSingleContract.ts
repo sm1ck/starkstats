@@ -49,7 +49,7 @@ const parseSingleContract: (
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        'query': `query MyQuery { invoke( where: {contract: {id: {_eq: ${id}}}} ) { nonce\n time\n id} transfer( where: { to_id: {_eq: ${id}}, token_id: {_eq: 0}}) { from { hash } amount } deploy(where: {contract: {id: {_eq: ${id}}}}) { time } deploy_account(where: {contract: {id: {_eq: ${id}}}}) { time } token_balance(where: {owner_id: {_eq: ${id}}, token_id: {_eq: 0}}) { balance } }`,
+        'query': `query MyQuery { invoke( where: {contract: {id: {_eq: ${id}}}} ) { nonce\n time\n id} transfer( where: { to_id: {_eq: ${id}}, contract_id: {_eq: 21328}}) { from { hash } amount } deploy(where: {contract: {id: {_eq: ${id}}}}) { time } deploy_account(where: {contract: {id: {_eq: ${id}}}}) { time } token_balance(where: {owner_id: {_eq: ${id}}, token_id: {_eq: 0}}) { balance } }`,
       }),
     });
     json = await parse.json();
