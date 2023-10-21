@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import Database from "../database/Database";
 import { IContract } from "../database/models/Contract";
 import { sleep, convertToGraphQlAddress, formatBalance, convertToNormalAddress } from "../utils/common";
-import { bridgeIdentifiers, cexIdentifiers } from "../utils/definedConst";
+import { bridgeIdentifiers, cexIdentifiers, ethIdentifier, protocolIdentifiers, stableIdentifiers6, stableIdentifiers18 } from "../utils/definedConst";
 
 const parseSingleContract: (
   doc: mongoose.HydratedDocument<IContract>,
@@ -49,7 +49,7 @@ const parseSingleContract: (
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        'query': `query MyQuery { invoke( where: {contract: {id: {_eq: ${id}}}} ) { nonce\n time\n id} transfer( where: { to_id: {_eq: ${id}}, contract_id: {_eq: 21328}}) { from { hash } amount } deploy(where: {contract: {id: {_eq: ${id}}}}) { time } deploy_account(where: {contract: {id: {_eq: ${id}}}}) { time } token_balance(where: {owner_id: {_eq: ${id}}, token_id: {_eq: 0}}) { balance } }`,
+        'query': `query MyQuery { invoke( where: {contract: {id: {_eq: ${id}}}} ) { nonce\n time\n id} transfer( where: {_or: [{from_id: {_eq: ${id}}} {to_id: {_eq: ${id}}}]} ) { from { hash } to { hash } token { contract { hash } } amount } deploy(where: {contract: {id: {_eq: ${id}}}}) { time } deploy_account(where: {contract: {id: {_eq: ${id}}}}) { time } token_balance(where: {owner_id: {_eq: ${id}}, token_id: {_eq: 0}}) { balance } }`,
       }),
     });
     json = await parse.json();
@@ -87,17 +87,36 @@ const parseSingleContract: (
     }, []);
     txTimestamps = [...txTimestamps, ...invokeTimestamps];
     let bridgesVolume: number = json.data.transfer.reduce((total: number, curr: any) => {
-      if (curr.from && bridgeIdentifiers.some((v) => convertToNormalAddress(curr.from.hash).includes(v))) {
+      if (curr?.from?.hash && curr?.to?.hash && curr?.token?.contract?.hash && convertToNormalAddress(curr.token.contract.hash).includes(ethIdentifier) && bridgeIdentifiers.some((v) => convertToNormalAddress(curr.from.hash).includes(v) || convertToNormalAddress(curr.to.hash).includes(v))) {
           total += formatBalance(BigInt(curr.amount), 18);
       }
       return total;
     }, 0);
     let bridgesWithCexVolume: number = json.data.transfer.reduce((total: number, curr: any) => {
-      if (curr.from && (bridgeIdentifiers.some((v) => convertToNormalAddress(curr.from.hash).includes(v)) || cexIdentifiers.some((v) => convertToNormalAddress(curr.from.hash).includes(v)))) {
+      if (curr?.from?.hash && curr?.to?.hash && curr?.token?.contract?.hash && convertToNormalAddress(curr.token.contract.hash).includes(ethIdentifier) && (bridgeIdentifiers.some((v) => convertToNormalAddress(curr.from.hash).includes(v) || convertToNormalAddress(curr.to.hash).includes(v)) || cexIdentifiers.some((v) => convertToNormalAddress(curr.from.hash).includes(v) || convertToNormalAddress(curr.to.hash).includes(v)))) {
         total += formatBalance(BigInt(curr.amount), 18);
       }
     return total;
     }, 0);
+    let internalVolume: number = json.data.transfer.reduce((total: number, curr: any) => {
+      if (curr?.from?.hash && curr?.to?.hash && curr?.token?.contract?.hash && convertToNormalAddress(curr.token.contract.hash).includes(ethIdentifier) && protocolIdentifiers.some((v) => convertToNormalAddress(curr.from.hash).includes(v) || convertToNormalAddress(curr.to.hash).includes(v))) {
+          total += formatBalance(BigInt(curr.amount), 18);
+      }
+      return total;
+    }, 0);
+    let internalVolumeStables6: number = json.data.transfer.reduce((total: number, curr: any) => {
+      if (curr?.from?.hash && curr?.to?.hash && curr?.token?.contract?.hash && stableIdentifiers6.some((v) => convertToNormalAddress(curr.token.contract.hash).includes(v)) && protocolIdentifiers.some((v) => convertToNormalAddress(curr.from.hash).includes(v) || convertToNormalAddress(curr.to.hash).includes(v))) {
+          total += formatBalance(BigInt(curr.amount), 6);
+      }
+      return total;
+    }, 0);
+    let internalVolumeStables18: number = json.data.transfer.reduce((total: number, curr: any) => {
+      if (curr?.from?.hash && curr?.to?.hash && curr?.token?.contract?.hash && stableIdentifiers18.some((v) => convertToNormalAddress(curr.token.contract.hash).includes(v)) && protocolIdentifiers.some((v) => convertToNormalAddress(curr.from.hash).includes(v) || convertToNormalAddress(curr.to.hash).includes(v))) {
+          total += formatBalance(BigInt(curr.amount), 18);
+      }
+      return total;
+    }, 0);
+    let internalVolumeStables = internalVolumeStables6 + internalVolumeStables18;
     if (bridgesVolume > doc.bridgesVolume) {
       doc.bridgesVolume = bridgesVolume;
     }
@@ -106,6 +125,12 @@ const parseSingleContract: (
     }
     if (txTimestamps.length > doc.txTimestamps.length) {
       doc.txTimestamps = txTimestamps;
+    }
+    if (internalVolume > doc.internalVolume) {
+      doc.internalVolume = internalVolume;
+    }
+    if (internalVolumeStables > doc.internalVolumeStables) {
+      doc.internalVolumeStables = internalVolumeStables;
     }
     await database.updateContract(doc);
     // if (doc.nonce === 0 || doc.txTimestamps.length === 0) {

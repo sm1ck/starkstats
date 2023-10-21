@@ -9,6 +9,8 @@ class Cache {
     private cacheActivity: any = {status: false, error: "Данные еще не загружены.."};
     private cacheTotalWallets: any = {status: false, error: "Данные еще не загружены.."};
     private cacheVolume: any = {status: false, error: "Данные еще не загружены.."};
+    private cacheInternalVolume: any = {status: false, error: "Данные еще не загружены.."};
+    private cacheEthPrice = 0;
 
     constructor(public database: Database, public parseUrl: string) {
     }
@@ -33,6 +35,18 @@ class Cache {
         return this.cacheVolume;
     }
 
+    getCacheInternalVolume() {
+        return this.cacheInternalVolume;
+    }
+
+    getCacheEthPrice() {
+        return this.cacheEthPrice;
+    }
+
+    updateCacheEthPrice(cache: number) {
+        this.cacheEthPrice = cache;
+    }
+
     updateCacheBalance(cache: any) {
         this.cacheBalance = cache;
     }
@@ -51,6 +65,10 @@ class Cache {
 
     updateCacheVolume(cache: any) {
         this.cacheVolume = cache;
+    }
+
+    updateCacheInternalVolume(cache: any) {
+        this.cacheInternalVolume = cache;
     }
 
     async startUpdateOnInterval(timeSec: number, cores: number): Promise<void> {
@@ -89,6 +107,17 @@ class Cache {
                 }
             }
         };
+        let internalVolume = {
+            data: {
+                internal50: 0,
+                internal500: 0,
+                internal1000: 0,
+                internal5000: 0,
+                internal10000: 0,
+                internal50000: 0,
+                internalMore: 0,
+            }
+        }
         let tx = {
             data: {
                 users_by_tx: {
@@ -150,6 +179,8 @@ class Cache {
                     if (msg.hasOwnProperty("volume")) {
                         volume.data.bridgesVolume = deepMergeSum(msg.volume.data.bridgesVolume, volume.data.bridgesVolume) as any;
                         volume.data.bridgesWithCexVolume = deepMergeSum(msg.volume.data.bridgesWithCexVolume, volume.data.bridgesWithCexVolume) as any;
+                    } else if (msg.hasOwnProperty("internalVolume")) {
+                        internalVolume.data = deepMergeSum(msg.internalVolume.data, internalVolume.data) as any;
                     } else if (msg.hasOwnProperty("tx")) {
                         tx.data.users_by_tx = deepMergeSum(msg.tx.data.users_by_tx, tx.data.users_by_tx) as any;
                     } else if (msg.hasOwnProperty("balance")) {
@@ -158,6 +189,8 @@ class Cache {
                         activity.data.users_by_days = deepMergeSum(msg.activity.data.users_by_days, activity.data.users_by_days) as any;
                         activity.data.users_by_weeks = deepMergeSum(msg.activity.data.users_by_weeks, activity.data.users_by_weeks) as any;
                         activity.data.users_by_months = deepMergeSum(msg.activity.data.users_by_months, activity.data.users_by_months) as any;
+                    } else if (msg.hasOwnProperty("ethPrice")) {
+                        this.updateCacheEthPrice(+msg.ethPrice);
                     }
                 });
                 worker.on("error", (e) => console.log("[Error] -> ", e));
@@ -169,6 +202,7 @@ class Cache {
         }
         await Promise.allSettled(promises);
         this.updateCacheVolume(volume);
+        this.updateCacheInternalVolume(internalVolume);
         this.updateCacheTx(tx);
         this.updateCacheBalance(balance);
         this.updateCacheActivity(activity);

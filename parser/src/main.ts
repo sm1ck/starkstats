@@ -22,5 +22,5 @@ if (is30mNewInsert) {
 }
 
 if (isHourlyUpdate) {
-    hourlyContractsUpdate(21600, database, graphlUrl); // 6 hours
+    hourlyContractsUpdate(10800, database, graphlUrl); // 3 hrs + ~3 hrs update
 }

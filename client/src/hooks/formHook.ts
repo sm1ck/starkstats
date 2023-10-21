@@ -23,7 +23,7 @@ export const useForm = () => {
             .then(data => {
                 setResult(data);
                 if (data.data !== undefined) {
-                    setResultCsv([t("csvTabs", { returnObjects: true }), ...data.data.map((v: any, index: number) => [String(index + 1), String(v.contract), String(v.balance), String(v.nonce), String(v.bridgesVolume), String(v.bridgesWithCexVolume), String(v.txTimestamps), i18n.language === "ru" ? String(v.lastTx) : replaceRuEngDates(String(v.lastTx))])]);
+                    setResultCsv([t("csvTabs", { returnObjects: true }), ...data.data.map((v: any, index: number) => [String(index + 1), String(v.contract), String(v.balance), String(v.nonce), String(v.bridgesVolume), String(v.bridgesWithCexVolume), String(v.internalVolume), String(v.txTimestamps), i18n.language === "ru" ? String(v.lastTx) : replaceRuEngDates(String(v.lastTx))])]);
                 }
                 setTimeout(() => refScroll.current.scrollIntoView(), 500);
             });

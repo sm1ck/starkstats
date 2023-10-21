@@ -18,7 +18,7 @@ export const Index: () => JSX.Element = () => {
         wrapperStyle={{}}
         visible={true}
     /> : fetchData.data === undefined ? <div>{fetchData.error}</div> : <div style={{ textAlign: "center", fontSize: "1rem" }}>
-        <h3>{t("indexTotal")}</h3>
+        <h3 style={{ marginTop: 0 }}>{t("indexTotal")}</h3>
         <h3 style={{ color: "var(--color-bg)" }}>{fetchData.data.totalWallets}</h3>
         <h3>{t("indexTotalExcluding")}</h3>
         <h3 style={{ color: "var(--color-bg)" }}>{fetchData.data.totalWalletsFiltered}</h3>
@@ -32,8 +32,9 @@ export const Index: () => JSX.Element = () => {
             {t("indexDescriptionDetails")}
             <br />
             {t("indexDescriptionDetails2")}
-            <a href="https://starkscan.co" target="_blank" rel="noreferrer">starkscan.co</a>
             {t("indexDescriptionDetails3")}
+            <br />
+            {t("indexDescriptionDetails4")}
         </div>
         <h3>{t("indexLinks")}</h3>
         Github: <a href="https://github.com/sm1ck/starkstats" target="_blank" rel="noreferrer">github.com/sm1ck/starkstats</a><br />

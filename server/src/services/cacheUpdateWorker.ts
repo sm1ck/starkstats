@@ -6,22 +6,26 @@ import { exit } from 'process';
 // Это файл с воркером, который запускается отдельным инстансом nodejs
 // Поэтому пришлось сюда скопировать некоторый код существующий
 
-export interface IContract {
-  contract: string;
-  nonce: number;
-  balance: number;
-  txTimestamps: number[],
-  bridgesVolume: number,
-  bridgesWithCexVolume: number
+interface IContract {
+    contract: string;
+    nonce: number;
+    balance: number;
+    txTimestamps: number[],
+    bridgesVolume: number,
+    bridgesWithCexVolume: number,
+    internalVolume: number,
+    internalVolumeStables: number,
 }
-
+  
 const schema = new mongoose.Schema<IContract>({
     contract: { type: String, unique: true, require: true },
     nonce: Number,
     balance: Number,
     txTimestamps: [Number],
     bridgesVolume: Number,
-    bridgesWithCexVolume: Number
+    bridgesWithCexVolume: Number,
+    internalVolume: Number,
+    internalVolumeStables: Number,
   });
   
 const Contract = mongoose.model("Contract", schema);
@@ -59,6 +63,11 @@ try {
         exit(0);
     }
     if (parentPort) {
+        // eth price
+        let ethPriceQuery = await fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD");
+        let ethPriceJson = await ethPriceQuery.json();
+        let ethPrice = +ethPriceJson.USD;
+        parentPort.postMessage({ ethPrice });
         // volume
         let lessThan5of1000 = 0;
         let lessThan1of100 = 0;
@@ -70,6 +79,14 @@ try {
         let lessThan1of10_2 = 0;
         let lessThan1of2_2 = 0;
         let lessThan1_2 = 0;
+        // internal volume
+        let internal50 = 0;
+        let internal500 = 0;
+        let internal1000 = 0;
+        let internal5000 = 0;
+        let internal10000 = 0;
+        let internal50000 = 0;
+        let internalMore = 0;
         // tx
         let uniqNonces = {
             1: 0,
@@ -138,6 +155,23 @@ try {
                 lessThan1of2_2++;
             } else if (typeof contract.bridgesWithCexVolume === "number" && contract.bridgesWithCexVolume > 0) {
                 lessThan1_2++;
+            }
+            // internal volume
+            let totalInternalVolume = ethPrice * contract.internalVolume + contract.internalVolumeStables;
+            if (totalInternalVolume < 50 && totalInternalVolume > 0) {
+                internal50++;
+            } else if (totalInternalVolume < 500 && totalInternalVolume > 0) {
+                internal500++;
+            } else if (totalInternalVolume < 1000 && totalInternalVolume > 0) {
+                internal1000++;
+            } else if (totalInternalVolume < 5000 && totalInternalVolume > 0) {
+                internal5000++;
+            } else if (totalInternalVolume < 10000 && totalInternalVolume > 0) {
+                internal10000++;
+            } else if (totalInternalVolume < 50000 && totalInternalVolume > 0) {
+                internal50000++;
+            } else if (typeof totalInternalVolume === "number" && totalInternalVolume > 0) {
+                internalMore++;
             }
             // tx
             if (contract.nonce <= 5 && contract.nonce > 0) {
@@ -222,6 +256,19 @@ try {
                         lessThan1of2: lessThan1of2_2,
                         lessThan1: lessThan1_2,
                     }
+                }
+            }
+        });
+        parentPort.postMessage({ 
+            internalVolume: {
+                data: {
+                    internal50,
+                    internal500,
+                    internal1000,
+                    internal5000,
+                    internal10000,
+                    internal50000,
+                    internalMore,
                 }
             }
         });

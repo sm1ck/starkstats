@@ -2,7 +2,7 @@ import { Watch } from "react-loader-spinner";
 import { useFetch } from "../hooks/fetchHook";
 import { VictoryPie, VictoryTooltip } from "victory";
 import { useTitle } from "../hooks/titleHook";
-import { sumPercent } from "../utils/common";
+import { smallColormap, sumPercent } from "../utils/common";
 import { useTranslation } from "react-i18next";
 
 export const Tx = () => {
@@ -24,7 +24,7 @@ export const Tx = () => {
             <h3 className="textCenter">{t("txTitle")}</h3>
             <div className="textCenter">{t("chartInstruction")}</div>
             <VictoryPie
-                colorScale={"warm"}
+                colorScale={smallColormap}
                 style={{ labels: { fontSize: 12 } }}
                 labelComponent={
                     <VictoryTooltip dy={0} centerOffset={{ x: 25 }} />

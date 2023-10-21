@@ -40,6 +40,7 @@ export const BatchCheck = () => {
                 <div className="col col-3">{t("transactions")}</div>
                 <div className="col col-4">{t("bridgeVolume")}</div>
                 <div className="col col-5">{t("bridgeExchangesVolume")}</div>
+                <div className="col col-5">{t("navInternalVolume")}</div>
                 <div className="col col-6">{t("active")}</div>
                 <div className="col col-7">{t("lastTransaction")}</div>
             </li>{form.result.data.map((v: any, index: number) =>
@@ -48,10 +49,11 @@ export const BatchCheck = () => {
                     <div className="col col-1" data-label="Адрес123">{`${String(v.contract).substring(0, 6)}...${String(v.contract).substring(v.contract.length - 6)}`}</div>
                     <div className="col col-2" data-label="Баланс">{Number(v.balance).toFixed(5)} ETH</div>
                     <div className="col col-3" data-label="Транзакции">{v.nonce}</div>
-                    <div className="col col-4" data-label="Объем через мост">{Number(v.bridgesVolume).toFixed(5)} ETH</div>
-                    <div className="col col-5" data-label="Объем через мост + биржи">{Number(v.bridgesWithCexVolume).toFixed(5)} ETH</div>
-                    <div className="col col-6" data-label="Активных дней / недель / месяцев">{v.txTimestamps}</div>
-                    <div className="col col-7" data-label="Последняя транзакция">{i18n.language === "ru" ? String(v.lastTx) : replaceRuEngDates(String(v.lastTx))}</div>
+                    <div className="col col-4" data-label="Объем через мост">{Number(v.bridgesVolume).toFixed(3)} ETH</div>
+                    <div className="col col-5" data-label="Объем через мост + биржи">{Number(v.bridgesWithCexVolume).toFixed(3)} ETH</div>
+                    <div className="col col-6" data-label="Объем внутри сети">{Number(v.internalVolume) < 1 && Number(v.internalVolume) > 0 ? Number(v.internalVolume).toFixed(2) : Math.floor(Number(v.internalVolume))}$</div>
+                    <div className="col col-7" data-label="Активных дней / недель / месяцев">{v.txTimestamps}</div>
+                    <div className="col col-8" data-label="Последняя транзакция">{i18n.language === "ru" ? String(v.lastTx) : replaceRuEngDates(String(v.lastTx))}</div>
                 </li>
             )}</ul>
             <CSVLink className="button-61" style={{ position: "fixed", bottom: "5px", right: "5px" }} data={form.resultCsv}>{t("export")}</CSVLink>

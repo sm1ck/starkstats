@@ -42,7 +42,7 @@ class Database {
   async updateContract(doc: mongoose.HydratedDocument<IContract>) {
     await doc.save();
     console.log(
-      `[Update] -> Контракт: ${doc.contract}, всего транзакций: ${doc.nonce}, баланс: ${doc.balance} ETH, объем через мост: ${doc.bridgesVolume} ETH, объем через мост + биржи: ${doc.bridgesWithCexVolume} ETH`
+      `[Update] -> Контракт: ${doc.contract}, всего транзакций: ${doc.nonce}, баланс: ${doc.balance} ETH, объем через мост: ${doc.bridgesVolume} ETH, объем через мост + биржи: ${doc.bridgesWithCexVolume} ETH, объем внутри сети: ${doc.internalVolume} ETH, объем внутри сети: ${doc.internalVolumeStables}$`
     );
   }
 

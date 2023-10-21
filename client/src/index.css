@@ -129,6 +129,7 @@ h1 {
 }
 
 .button-61:hover {
+  text-decoration: none;
   box-shadow: rgba(0, 0, 0, .2) 0 2px 4px -1px, rgba(0, 0, 0, .14) 0 4px 5px 0, rgba(0, 0, 0, .12) 0 1px 10px 0;
 }
 
@@ -161,7 +162,7 @@ li {
   display: inline-flex;
   justify-content: space-between;
   margin-bottom: 25px;
-  font-size: 1rem;
+  font-size: 0.95rem !important;
   letter-spacing: 0.03em;
   text-align: center;
 }
@@ -183,31 +184,35 @@ li {
 }
 
 .col-1 {
-  flex-basis: 13.7%;
+  flex-basis: 12%;
 }
 
 .col-2 {
-  flex-basis: 13.7%;
+  flex-basis: 12%;
 }
 
 .col-3 {
-  flex-basis: 13.7%;
+  flex-basis: 12%;
 }
 
 .col-4 {
-  flex-basis: 13.7%;
+  flex-basis: 12%;
 }
 
 .col-5 {
-  flex-basis: 13.7%;
+  flex-basis: 12%;
 }
 
 .col-6 {
-  flex-basis: 13.7%;
+  flex-basis: 12%;
 }
 
 .col-7 {
-  flex-basis: 13.7%;
+  flex-basis: 12%;
+}
+
+.col-8 {
+  flex-basis: 12%;
 }
 
 .victoryPie {
@@ -228,6 +233,18 @@ li {
   display: none;
 }
 
+@media (max-width: 1280px) {
+  header>a {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 1050px) {
+  li {
+    font-size: 0.85rem !important;
+  }
+}
+
 @media screen and (max-width: 768px) {
 
   .victoryPie {
@@ -244,6 +261,11 @@ li {
     font-size: 1rem;
   }
 
+  ul {
+    padding: 10px;
+    margin: 0px;
+  }
+
   li {
     border-radius: 3px;
     padding: 25px 30px;
@@ -252,7 +274,7 @@ li {
     display: inline-flex;
     justify-content: space-between;
     margin-bottom: 25px;
-    font-size: 0.53rem;
+    font-size: 0.47rem !important;
     letter-spacing: 0.01em;
     text-align: center;
   }

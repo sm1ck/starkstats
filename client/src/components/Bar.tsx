@@ -18,6 +18,7 @@ export const Bar = () => {
                 <CustomLink to="/tx">{t("navTx")}</CustomLink>
                 <CustomLink to="/activity">{t("navActivity")}</CustomLink>
                 <CustomLink to="/volume">{t("navVolume")}</CustomLink>
+                <CustomLink to="/internalvolume">{t("navInternalVolume")}</CustomLink>
                 <CustomLink to="/batchcheck">{t("navBatchcheck")}</CustomLink>
                 <a onClick={handleClick} title={t("languageSwitch")}>
                     <img src={`flag-${i18n.language}.svg.webp`} className="language-flag" />
