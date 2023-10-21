@@ -8,19 +8,20 @@ const isParseAll = process.env.PARSE_ALL_CONTRACTS === "true" ? true : false;
 const is30mNewInsert = process.env.NEW_INSERT_CONTRACTS  === "true" ? true : false;
 const isHourlyUpdate = process.env.UPDATE_CONTRACTS === "true" ? true : false;
 const graphlUrl = process.env.GRAPHQL_URL || ""
+const hasuraSecret = process.env.HASURA_SECRET || ""
 const database = new Database(
     process.env.MONGODB_URL || "mongodb://root:pass@127.0.0.1:27017"
   );
   
 if (isParseAll) {
-    parseDeploy(null, null, database, "deploy", slowMode, graphlUrl);
-    parseDeploy(null, null, database, "deploy_account", slowMode, graphlUrl);
+    parseDeploy(null, null, database, "deploy", slowMode, graphlUrl, hasuraSecret);
+    parseDeploy(null, null, database, "deploy_account", slowMode, graphlUrl, hasuraSecret);
 }
 
 if (is30mNewInsert) {
-    addNewContracts(1800, database, graphlUrl);
+    addNewContracts(1800, database, graphlUrl, hasuraSecret);
 }
 
 if (isHourlyUpdate) {
-    hourlyContractsUpdate(10800, database, graphlUrl); // 3 hrs + ~3 hrs update
+    hourlyContractsUpdate(10800, database, graphlUrl, hasuraSecret); // 3 hrs + ~3 hrs update
 }

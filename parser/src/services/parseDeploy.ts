@@ -12,8 +12,9 @@ const parseDeploy: (
   database: Database,
   table: string,
   slowMode: boolean,
-  parseUrl: string
-) => Promise<void> = async (offset, minTime, database, table, slowMode, parseUrl) => {
+  parseUrl: string,
+  hasuraSecret: string
+) => Promise<void> = async (offset, minTime, database, table, slowMode, parseUrl, hasuraSecret) => {
   try {
     let whereTime = minTime ? `, where: {time: {_gte: "${new Date(Math.round(minTime * 1000)).toISOString()}"}}` : "";
     // first parse
@@ -22,6 +23,8 @@ const parseDeploy: (
       headers: {
         accept: "application/json",
         "content-type": "application/json",
+        "Hasura-Client-Name": "hasura-console",
+        "X-Hasura-Admin-Secret": hasuraSecret,
       },
       body: JSON.stringify({
         query:
@@ -52,7 +55,7 @@ const parseDeploy: (
           return;
         } else {
           //await sleep(200);
-          return parseDeploy(offset, minTime, database, table, slowMode, parseUrl);
+          return parseDeploy(offset, minTime, database, table, slowMode, parseUrl, hasuraSecret);
         }
       }
     }
@@ -61,12 +64,12 @@ const parseDeploy: (
       return;
     } else {
       //await sleep(200);
-      return parseDeploy(offset, minTime, database, table, slowMode, parseUrl);
+      return parseDeploy(offset, minTime, database, table, slowMode, parseUrl, hasuraSecret);
     }
   } catch (e) {
     console.log("[Error] -> ", e);
     await sleep(1000);
-    return parseDeploy(offset, minTime, database, table, slowMode, parseUrl);
+    return parseDeploy(offset, minTime, database, table, slowMode, parseUrl, hasuraSecret);
   }
 };
 

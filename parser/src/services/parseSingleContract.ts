@@ -10,8 +10,9 @@ const parseSingleContract: (
   doc: mongoose.HydratedDocument<IContract>,
   database: Database,
   parseUrl: string,
-  retries: number
-) => Promise<void> = async (doc, database, parseUrl, retries) => {
+  hasuraSecret: string,
+  retries: number,
+) => Promise<void> = async (doc, database, parseUrl, hasuraSecret, retries) => {
   try {
     // first parse
     let parse = await fetch(parseUrl, {
@@ -19,6 +20,8 @@ const parseSingleContract: (
       headers: {
         accept: "application/json",
         "content-type": "application/json",
+        "Hasura-Client-Name": "hasura-console",
+        "X-Hasura-Admin-Secret": hasuraSecret,
       },
       body: JSON.stringify({
         'query': `query MyQuery { address(where: {hash: {_eq: "${convertToGraphQlAddress(doc.contract)}"}}) { id } }`,
@@ -48,6 +51,8 @@ const parseSingleContract: (
       headers: {
         accept: "application/json",
         "content-type": "application/json",
+        "Hasura-Client-Name": "hasura-console",
+        "X-Hasura-Admin-Secret": hasuraSecret,
       },
       body: JSON.stringify({
         'query': `query MyQuery { invoke( where: {contract: {id: {_eq: ${id}}}} ) { time parsed_calldata} transfer( where: {_or: [{from_id: {_eq: ${id}}} {to_id: {_eq: ${id}}}]} ) { from { hash } to { hash } token { contract { hash } } amount } deploy(where: {contract: {id: {_eq: ${id}}}}) { time } deploy_account(where: {contract: {id: {_eq: ${id}}}}) { time } token_balance(where: {owner_id: {_eq: ${id}}, token_id: {_eq: 0}}) { balance } }`,
@@ -154,7 +159,7 @@ const parseSingleContract: (
     console.dir(e);
     if (retries > 0) {
       await sleep(1000);
-      return parseSingleContract(doc, database, parseUrl, retries - 1);
+      return parseSingleContract(doc, database, parseUrl, hasuraSecret, retries - 1);
     }
   }
 };

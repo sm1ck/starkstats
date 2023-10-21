@@ -41,5 +41,6 @@ services:
       - PARSE_ALL_CONTRACTS=false # parse old contracts for db
       - NEW_INSERT_CONTRACTS=true # insert new contracts using 30m timer
       - UPDATE_CONTRACTS=false # update every 1 day all contracts for db
+      - HASURA_SECRET=<SECRET_HERE> # secret for hasura
     volumes:
       - ./parser:/node/parser
