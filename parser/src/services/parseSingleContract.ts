@@ -127,7 +127,8 @@ const parseSingleContract: (
       }
       return total;
     }, 0);
-    let internalVolumeStables = internalVolumeStables6 + internalVolumeStables18 - invokeSwapVolumeStables;
+    let internalVolumeStables = internalVolumeStables6 + internalVolumeStables18;
+    internalVolumeStables -= invokeSwapVolumeStables;
     internalVolume -= invokeSwapVolumeEth;
     if (bridgesVolume > doc.bridgesVolume) {
       doc.bridgesVolume = bridgesVolume;
