@@ -94,6 +94,11 @@ const parseContractCallData = (calldata: any) => {
                             break;
                         case "fibrous1":
                             if (call.calldata.length > 12) {
+                                let len = call.calldata[0+shift];
+                                // unimplemented more than one step swaps
+                                if (parseInt(len, 16) > 1) {
+                                    return result;
+                                }
                                 let amount = uint256.uint256ToBN({ low: BigInt(call.calldata[8+shift]), high: BigInt(call.calldata[9+shift])});
                                 result.token = getChecksumAddress(call.calldata[6+shift]).toLowerCase();
                                 if (result.token.includes(ethIdentifier) || stableIdentifiers18.some((v) => result.token.includes(v))) {
