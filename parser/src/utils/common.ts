@@ -27,4 +27,4 @@ export const formatBalance = (qty: bigint, decimals: number): number => {
   let rightCleaned = balance.slice(-decimals).replace(/(\d)0+$/gm, '$1');
   let leftCleaned = BigInt(balance.slice(0, balance.length - decimals)).toString();
   return +(leftCleaned + "." + rightCleaned);
-}
+};
