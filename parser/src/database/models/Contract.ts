@@ -7,8 +7,6 @@ export interface IContract {
   txTimestamps: number[],
   bridgesVolume: number,
   bridgesWithCexVolume: number,
-  bridgesVolumeStables: number,
-  bridgesWithCexVolumeStables: number,
   internalVolume: number,
   internalVolumeStables: number,
 }
@@ -20,8 +18,6 @@ const schema = new mongoose.Schema<IContract>({
   txTimestamps: [Number],
   bridgesVolume: Number,
   bridgesWithCexVolume: Number,
-  bridgesVolumeStables: Number,
-  bridgesWithCexVolumeStables: Number,
   internalVolume: Number,
   internalVolumeStables: Number,
 });

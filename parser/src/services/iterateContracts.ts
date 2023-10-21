@@ -10,7 +10,7 @@ const iterateContracts = async (
 ) => {
   let i = 0;
   for await (let doc of isNew
-    ? Contract.find({ txTimestamps: { $eq: [] } })
+    ? Contract.find({ txTimestamps: { $eq: [] }, nonce: { $eq: 0 } })
     : Contract.find()) {
     try {
       if (doc.contract === undefined) continue;

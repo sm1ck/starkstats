@@ -36,6 +36,13 @@ const parseDeploy: (
       if (accountIds.includes(curr.contract.class_id)) {
         acc.push(new Contract({
           contract: convertToNormalAddress(curr.contract.hash),
+          nonce: 0,
+          balance: 0,
+          txTimestamps: [],
+          bridgesVolume: 0,
+          bridgesWithCexVolume: 0,
+          internalVolume: 0,
+          internalVolumeStables: 0,
         }));
       } else {
         console.log(`[Insert] -> ${convertToNormalAddress(curr.contract.hash)} имеет class id ${curr.contract.class_id}, пропускаем..`);
