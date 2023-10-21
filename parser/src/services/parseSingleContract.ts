@@ -65,10 +65,10 @@ const parseSingleContract: (
     }
     let nonce = +json.data.invoke.length + 1; // 1 -> deploy tx
     let balance = json.data.token_balance.length > 0 ? formatBalance(BigInt(json.data.token_balance[0].balance), 18) : 0;
-    if (nonce > doc.nonce) {
+    if (doc.nonce === undefined || nonce > doc.nonce) {
       doc.nonce = nonce;
     }
-    if (balance > 0) {
+    if (doc.balance === undefined || balance > 0) {
       doc.balance = balance;
     }
     let txTimestamps: Array<number> = [];
@@ -130,19 +130,19 @@ const parseSingleContract: (
     let internalVolumeStables = internalVolumeStables6 + internalVolumeStables18;
     internalVolumeStables -= invokeSwapVolumeStables;
     internalVolume -= invokeSwapVolumeEth;
-    if (bridgesVolume > doc.bridgesVolume) {
+    if (doc.bridgesVolume === undefined || bridgesVolume > doc.bridgesVolume) {
       doc.bridgesVolume = bridgesVolume;
     }
-    if (bridgesWithCexVolume > doc.bridgesWithCexVolume) {
+    if (doc.bridgesWithCexVolume === undefined || bridgesWithCexVolume > doc.bridgesWithCexVolume) {
       doc.bridgesWithCexVolume = bridgesWithCexVolume;
     }
-    if (txTimestamps.length > doc.txTimestamps.length) {
+    if (doc.txTimestamps === undefined || txTimestamps.length > doc.txTimestamps.length) {
       doc.txTimestamps = txTimestamps;
     }
-    if (internalVolume > doc.internalVolume) {
+    if (doc.internalVolume === undefined || internalVolume > doc.internalVolume) {
       doc.internalVolume = internalVolume;
     }
-    if (internalVolumeStables > doc.internalVolumeStables) {
+    if (doc.internalVolumeStables === undefined || internalVolumeStables > doc.internalVolumeStables) {
       doc.internalVolumeStables = internalVolumeStables;
     }
     await database.updateContract(doc);
