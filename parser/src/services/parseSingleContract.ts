@@ -154,7 +154,7 @@ const parseSingleContract: (
   } catch (e) {
     console.log("[Error] -> ");
     console.dir(e);
-    if (retries > 0) {
+    if (retries > 0 && !e?.message?.includes("string longer than")) {
       await sleep(1000);
       return parseSingleContract(doc, database, parseUrl, retries - 1);
     }
