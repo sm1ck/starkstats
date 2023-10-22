@@ -94,6 +94,7 @@ try {
             10: 0,
             20: 0,
             30: 0,
+            50: 0,
           };
         // balances
         let lessThan5of1000_b = 0;
@@ -182,8 +183,10 @@ try {
                 uniqNonces[10]++;
             } else if (contract.nonce <= 30 && contract.nonce > 0) {
                 uniqNonces[20]++;
-            } else if (typeof contract.nonce === "number" && contract.nonce > 0) {
+            } else if (contract.nonce <= 50 && contract.nonce > 0) {
                 uniqNonces[30]++;
+            } else if (typeof contract.nonce === "number" && contract.nonce > 0) {
+                uniqNonces[50]++;
             }
             // balances
             if (contract.balance < 0.005 && contract.balance > 0) {

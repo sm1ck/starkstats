@@ -49,7 +49,7 @@ class Database {
   async deleteContract(doc: mongoose.HydratedDocument<IContract>) {
     await doc.deleteOne();
     console.log(
-      `[Update] -> Контракт: ${doc.contract} удален..`
+      `[Update] -> Контракт ${doc.contract} удален..`
     );
   }
 
