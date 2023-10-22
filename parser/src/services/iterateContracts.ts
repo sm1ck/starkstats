@@ -5,8 +5,7 @@ import parseSingleContract from "./parseSingleContract";
 const iterateContracts = async (
   database: Database,
   isNew: boolean,
-  parseUrl: string,
-  hasuraSecret: string
+  parseUrl: string
 ) => {
   let i = 0;
   for await (let doc of isNew
@@ -15,7 +14,7 @@ const iterateContracts = async (
     try {
       if (doc.contract === undefined) continue;
       console.log(`[Update] -> Контракт #${i}`);
-      await parseSingleContract(doc, database, parseUrl, hasuraSecret, 10);
+      await parseSingleContract(doc, database, parseUrl, 10);
     } catch (e) {
       console.log("[Error] -> ", e);
     }

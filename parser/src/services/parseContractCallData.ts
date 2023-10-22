@@ -1,4 +1,4 @@
-import { uint256, getChecksumAddress } from "starknet";
+import { uint256, validateAndParseAddress } from "starknet";
 import { ethIdentifier, protocolSelectors, stableIdentifiers18, stableIdentifiers6 } from "../utils/definedConst";
 import { formatBalance } from "../utils/common";
 
@@ -16,10 +16,10 @@ const parseContractCallData = (calldata: any) => {
         let shift = 0;
         let to, selector;
         if (call?.to && call?.selector) {
-            to = [getChecksumAddress(call.to).toLowerCase()];
+            to = [validateAndParseAddress(call.to).toLowerCase()];
             selector = [call.selector];
         } else if (call?.call_array?.length > 0) {
-            to = call.call_array.map((v: any) => getChecksumAddress(v.to).toLowerCase());
+            to = call.call_array.map((v: any) => validateAndParseAddress(v.to).toLowerCase());
             selector = call.call_array.map((v: any) => v.selector);
             shift = 3;
         }
@@ -34,7 +34,7 @@ const parseContractCallData = (calldata: any) => {
                         case "sithswap3":
                             if (call.calldata.length > 8) {
                                 let amount = uint256.uint256ToBN({ low: BigInt(call.calldata[0+shift]), high: BigInt(call.calldata[1+shift])});
-                                result.token = getChecksumAddress(call.calldata[5+shift]).toLowerCase();
+                                result.token = validateAndParseAddress(call.calldata[5+shift]).toLowerCase();
                                 if (result.token.includes(ethIdentifier) || stableIdentifiers18.some((v) => result.token.includes(v))) {
                                     result.amount = formatBalance(BigInt(amount), 18);
                                 } else if (stableIdentifiers6.some((v) => result.token.includes(v))) {
@@ -47,7 +47,7 @@ const parseContractCallData = (calldata: any) => {
                         case "10kswap2":
                             if (call.calldata.length > 8) {
                                 let amount = uint256.uint256ToBN({ low: BigInt(call.calldata[2+shift]), high: BigInt(call.calldata[3+shift])});
-                                result.token = getChecksumAddress(call.calldata[5+shift]).toLowerCase();
+                                result.token = validateAndParseAddress(call.calldata[5+shift]).toLowerCase();
                                 if (result.token.includes(ethIdentifier) || stableIdentifiers18.some((v) => result.token.includes(v))) {
                                     result.amount = formatBalance(BigInt(amount), 18);
                                 } else if (stableIdentifiers6.some((v) => result.token.includes(v))) {
@@ -59,7 +59,7 @@ const parseContractCallData = (calldata: any) => {
                         case "sithswap2":
                             if (call.calldata.length > 7) {
                                 let amount = uint256.uint256ToBN({ low: BigInt(call.calldata[0+shift]), high: BigInt(call.calldata[1+shift])});
-                                result.token = getChecksumAddress(call.calldata[4+shift]).toLowerCase();
+                                result.token = validateAndParseAddress(call.calldata[4+shift]).toLowerCase();
                                 if (result.token.includes(ethIdentifier) || stableIdentifiers18.some((v) => result.token.includes(v))) {
                                     result.amount = formatBalance(BigInt(amount), 18);
                                 } else if (stableIdentifiers6.some((v) => result.token.includes(v))) {
@@ -71,7 +71,7 @@ const parseContractCallData = (calldata: any) => {
                         case "avnu":
                             if (call.calldata.length > 2) {
                                 let amount = uint256.uint256ToBN({ low: BigInt(call.calldata[1+shift]), high: BigInt(call.calldata[2+shift])});
-                                result.token = getChecksumAddress(call.calldata[0+shift]).toLowerCase();
+                                result.token = validateAndParseAddress(call.calldata[0+shift]).toLowerCase();
                                 if (result.token.includes(ethIdentifier) || stableIdentifiers18.some((v) => result.token.includes(v))) {
                                     result.amount = formatBalance(BigInt(amount), 18);
                                 } else if (stableIdentifiers6.some((v) => result.token.includes(v))) {
@@ -83,7 +83,7 @@ const parseContractCallData = (calldata: any) => {
                         case "myswap":
                             if (call.calldata.length > 5) {
                                 let amount = uint256.uint256ToBN({ low: BigInt(call.calldata[2+shift]), high: BigInt(call.calldata[3+shift])});
-                                result.token = getChecksumAddress(call.calldata[1+shift]).toLowerCase();
+                                result.token = validateAndParseAddress(call.calldata[1+shift]).toLowerCase();
                                 if (result.token.includes(ethIdentifier) || stableIdentifiers18.some((v) => result.token.includes(v))) {
                                     result.amount = formatBalance(BigInt(amount), 18);
                                 } else if (stableIdentifiers6.some((v) => result.token.includes(v))) {
@@ -100,7 +100,7 @@ const parseContractCallData = (calldata: any) => {
                                     return result;
                                 }
                                 let amount = uint256.uint256ToBN({ low: BigInt(call.calldata[8+shift]), high: BigInt(call.calldata[9+shift])});
-                                result.token = getChecksumAddress(call.calldata[6+shift]).toLowerCase();
+                                result.token = validateAndParseAddress(call.calldata[6+shift]).toLowerCase();
                                 if (result.token.includes(ethIdentifier) || stableIdentifiers18.some((v) => result.token.includes(v))) {
                                     result.amount = formatBalance(BigInt(amount), 18);
                                 } else if (stableIdentifiers6.some((v) => result.token.includes(v))) {
@@ -112,7 +112,7 @@ const parseContractCallData = (calldata: any) => {
                         case "fibrous2":
                             if (call.calldata.length > 13) {
                                 let amount = uint256.uint256ToBN({ low: BigInt(call.calldata[2+shift]), high: BigInt(call.calldata[3+shift])});
-                                result.token = getChecksumAddress(call.calldata[0+shift]).toLowerCase();
+                                result.token = validateAndParseAddress(call.calldata[0+shift]).toLowerCase();
                                 if (result.token.includes(ethIdentifier) || stableIdentifiers18.some((v) => result.token.includes(v))) {
                                     result.amount = formatBalance(BigInt(amount), 18);
                                 } else if (stableIdentifiers6.some((v) => result.token.includes(v))) {

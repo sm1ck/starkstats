@@ -22,9 +22,17 @@ export const convertToNormalAddress = (address: string) => `0${address.slice(1)}
 
 export const convertToGraphQlAddress = (address: string) => `\\\\${address.slice(1)}`;
 
-export const formatBalance = (qty: bigint, decimals: number): number => {
-  let balance = String("0").repeat(decimals) + qty.toString();
-  let rightCleaned = balance.slice(-decimals).replace(/(\d)0+$/gm, '$1');
-  let leftCleaned = BigInt(balance.slice(0, balance.length - decimals)).toString();
-  return +(leftCleaned + "." + rightCleaned);
+export const formatBalance = (value: bigint, decimals: number): number => {
+  let display = value.toString();
+  const negative = display.startsWith('-');
+  if (negative) display = display.slice(1);
+  display = display.padStart(decimals, '0');
+  let [integer, fraction] = [
+    display.slice(0, display.length - decimals),
+    display.slice(display.length - decimals),
+  ];
+  fraction = fraction.replace(/(0+)$/, '');
+  return +`${negative ? '-' : ''}${integer || '0'}${
+    fraction ? `.${fraction}` : ''
+  }`;
 };

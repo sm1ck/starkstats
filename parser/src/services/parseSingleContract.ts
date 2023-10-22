@@ -10,18 +10,16 @@ const parseSingleContract: (
   doc: mongoose.HydratedDocument<IContract>,
   database: Database,
   parseUrl: string,
-  hasuraSecret: string,
   retries: number,
-) => Promise<void> = async (doc, database, parseUrl, hasuraSecret, retries) => {
+) => Promise<void> = async (doc, database, parseUrl, retries) => {
   try {
+    let start = performance.now();
     // first parse
     let parse = await fetch(parseUrl, {
       method: "POST",
       headers: {
         accept: "application/json",
         "content-type": "application/json",
-        "Hasura-Client-Name": "hasura-console",
-        "X-Hasura-Admin-Secret": hasuraSecret,
       },
       body: JSON.stringify({
         'query': `query MyQuery { address(where: {hash: {_eq: "${convertToGraphQlAddress(doc.contract)}"}}) { id } }`,
@@ -51,11 +49,9 @@ const parseSingleContract: (
       headers: {
         accept: "application/json",
         "content-type": "application/json",
-        "Hasura-Client-Name": "hasura-console",
-        "X-Hasura-Admin-Secret": hasuraSecret,
       },
       body: JSON.stringify({
-        'query': `query MyQuery { invoke( where: {contract: {id: {_eq: ${id}}}} ) { time parsed_calldata} transfer( where: {_or: [{from_id: {_eq: ${id}}} {to_id: {_eq: ${id}}}]} ) { from { hash } to { hash } token { contract { hash } } amount } deploy(where: {contract: {id: {_eq: ${id}}}}) { time } deploy_account(where: {contract: {id: {_eq: ${id}}}}) { time } token_balance(where: {owner_id: {_eq: ${id}}, token_id: {_eq: 0}}) { balance } }`,
+        'query': `query MyQuery { invoke( where: {contract: {id: {_eq: ${id}}}} ) { time parsed_calldata } transfer( where: {_or: [{from_id: {_eq: ${id}}} {to_id: {_eq: ${id}}}]} ) { from { hash } to { hash } token { contract { hash } } amount } deploy(where: {contract: {id: {_eq: ${id}}}}) { time } deploy_account(where: {contract: {id: {_eq: ${id}}}}) { time } token_balance(where: {owner_id: {_eq: ${id}}, token_id: {_eq: 0}}) { balance } }`,
       }),
     });
     json = await parse.json();
@@ -150,16 +146,17 @@ const parseSingleContract: (
     if (doc.internalVolumeStables === undefined || internalVolumeStables > doc.internalVolumeStables) {
       doc.internalVolumeStables = internalVolumeStables;
     }
-    await database.updateContract(doc);
+    database.updateContract(doc);
     // if (doc.nonce === 0 || doc.txTimestamps.length === 0) {
     //   await database.deleteContract(doc);
     // }
+    console.log(`[Update] -> Контракт ${doc.contract} обновлен за ${(performance.now() - start).toFixed(2)} ms`)
   } catch (e) {
     console.log("[Error] -> ");
     console.dir(e);
     if (retries > 0) {
       await sleep(1000);
-      return parseSingleContract(doc, database, parseUrl, hasuraSecret, retries - 1);
+      return parseSingleContract(doc, database, parseUrl, retries - 1);
     }
   }
 };
