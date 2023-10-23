@@ -22,6 +22,8 @@ export const BatchCheck = () => {
         <div className="line-break"></div>
         <textarea ref={form.ref} rows={20} spellCheck={false} style={{ width: "60%", fontSize: "1rem" }} />
         <div className="line-break"></div>
+        {t("batchcheckFreshData")} <input type="checkbox" ref={form.refCheckBox} />
+        <div className="line-break"></div>
         <button className="button-61" onClick={() => form.sendForm()}>{t("batchcheckCheckButton")}</button>
         <div className="line-break"></div>
         {form.result.data === undefined ? form.result.loading === undefined ? <div>{form.result.error}</div> : <Watch

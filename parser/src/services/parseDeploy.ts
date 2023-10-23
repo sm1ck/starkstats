@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch";
-import Database from "../database/Database";
-import Contract, { IContract } from "../database/models/Contract";
-import { sleep } from "../utils/common";
-import { convertToNormalAddress } from "../utils/common";
-import { defaultLimit, accountIds } from "../utils/definedConst";
 import mongoose from "mongoose";
+import { Database, utils, definedConst, Contract, IContract } from "shared";
 
 const parseDeploy: (
   offset: number | null,
@@ -36,7 +32,9 @@ const parseDeploy: (
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        query: `query MyQuery { ${table}(limit: ${defaultLimit}, offset: ${
+        query: `query MyQuery { ${table}(limit: ${
+          definedConst.defaultLimit
+        }, offset: ${
           offset ?? 0
         }${whereTime}) { contract { hash, class_id } time } }`,
       }),
@@ -44,10 +42,10 @@ const parseDeploy: (
     let json: any = await parse.json();
     let contracts = json.data[table].reduce(
       (acc: Array<mongoose.HydratedDocument<IContract>>, curr: any) => {
-        if (accountIds.includes(curr.contract.class_id)) {
+        if (definedConst.accountIds.includes(curr.contract.class_id)) {
           acc.push(
             new Contract({
-              contract: convertToNormalAddress(curr.contract.hash),
+              contract: utils.convertToNormalAddress(curr.contract.hash),
               nonce: 0,
               balance: 0,
               txTimestamps: [],
@@ -59,7 +57,7 @@ const parseDeploy: (
           );
         } else {
           console.log(
-            `[Insert] -> ${convertToNormalAddress(
+            `[Insert] -> ${utils.convertToNormalAddress(
               curr.contract.hash,
             )} имеет class id ${curr.contract.class_id}, пропускаем..`,
           );
@@ -69,7 +67,9 @@ const parseDeploy: (
       [],
     );
     // set offset
-    offset = offset ? offset + defaultLimit : defaultLimit;
+    offset = offset
+      ? offset + definedConst.defaultLimit
+      : definedConst.defaultLimit;
     // push to db
     try {
       await database.writeContracts(contracts);
@@ -98,12 +98,12 @@ const parseDeploy: (
       console.log("[Insert] -> Данных для парсинга больше нет..");
       return;
     } else {
-      //await sleep(200);
+      //await utils.sleep(200);
       return parseDeploy(offset, minTime, database, table, slowMode, parseUrl);
     }
   } catch (e) {
     console.log("[Error] -> ", e);
-    await sleep(1000);
+    await utils.sleep(1000);
     return parseDeploy(offset, minTime, database, table, slowMode, parseUrl);
   }
 };

@@ -1,7 +1,6 @@
-import Database from "../database/Database";
 import iterateContracts from "./iterateContracts";
 import parseDeploy from "./parseDeploy";
-import { countTime, sleep } from "../utils/common";
+import { Database, utils } from "shared";
 
 const addNewContracts = async (
   timeUpdateSec: number,
@@ -15,12 +14,12 @@ const addNewContracts = async (
     await parseDeploy(null, time, database, "deploy_account", false, parseUrl);
     await iterateContracts(database, true, parseUrl);
     console.log(
-      `[Wait] -> Задержка ${countTime(
+      `[Wait] -> Задержка ${utils.countTime(
         timeUpdateSec,
         true,
       )}до нового парсинга..`,
     );
-    await sleep(timeUpdateSec * 1000);
+    await utils.sleep(timeUpdateSec * 1000);
   }
 };
 

@@ -1,15 +1,13 @@
 {
-    "name": "parser",
+    "name": "shared",
     "version": "1.0.0",
     "description": "",
-    "main": "main.js",
-    "scripts": {
-        "build": "tsc",
-        "start": "node --max-old-space-size=16384 --experimental-specifier-resolution=node --loader ts-node/esm ./src/main.ts",
-        "lint": "eslint . --ext .ts"
-    },
+    "main": "./dist/main.js",
     "author": "",
     "license": "ISC",
+    "scripts": {
+        "build": "tsc"
+    },
     "type": "module",
     "devDependencies": {
         "@types/node": "^20.8.6",
@@ -24,7 +22,6 @@
     "dependencies": {
         "mongoose": "^7.3.2",
         "node-fetch": "^3.3.1",
-        "shared": "file:../shared",
         "starknet": "^5.14.1"
     }
 }

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Worker } from "worker_threads";
 import { DateTime } from "luxon";
-import Database from "./Database";
-import { countTime, sleep, deepMergeSum } from "../utils/common";
+import { Database, utils } from "shared";
 
 class Cache {
   private cacheBalance: any = {
@@ -221,39 +220,39 @@ class Cache {
           );
           worker.on("message", (msg) => {
             if (msg.hasOwnProperty("volume")) {
-              volume.data.bridgesVolume = deepMergeSum(
+              volume.data.bridgesVolume = utils.deepMergeSum(
                 msg.volume.data.bridgesVolume,
                 volume.data.bridgesVolume,
               ) as any;
-              volume.data.bridgesWithCexVolume = deepMergeSum(
+              volume.data.bridgesWithCexVolume = utils.deepMergeSum(
                 msg.volume.data.bridgesWithCexVolume,
                 volume.data.bridgesWithCexVolume,
               ) as any;
             } else if (msg.hasOwnProperty("internalVolume")) {
-              internalVolume.data = deepMergeSum(
+              internalVolume.data = utils.deepMergeSum(
                 msg.internalVolume.data,
                 internalVolume.data,
               ) as any;
             } else if (msg.hasOwnProperty("tx")) {
-              tx.data.users_by_tx = deepMergeSum(
+              tx.data.users_by_tx = utils.deepMergeSum(
                 msg.tx.data.users_by_tx,
                 tx.data.users_by_tx,
               ) as any;
             } else if (msg.hasOwnProperty("balance")) {
-              balance.data = deepMergeSum(
+              balance.data = utils.deepMergeSum(
                 msg.balance.data,
                 balance.data,
               ) as any;
             } else if (msg.hasOwnProperty("activity")) {
-              activity.data.users_by_days = deepMergeSum(
+              activity.data.users_by_days = utils.deepMergeSum(
                 msg.activity.data.users_by_days,
                 activity.data.users_by_days,
               ) as any;
-              activity.data.users_by_weeks = deepMergeSum(
+              activity.data.users_by_weeks = utils.deepMergeSum(
                 msg.activity.data.users_by_weeks,
                 activity.data.users_by_weeks,
               ) as any;
-              activity.data.users_by_months = deepMergeSum(
+              activity.data.users_by_months = utils.deepMergeSum(
                 msg.activity.data.users_by_months,
                 activity.data.users_by_months,
               ) as any;
@@ -278,15 +277,18 @@ class Cache {
     let endTime = performance.now();
     let executionTime = endTime - startTime;
     console.log(
-      `[Cache] -> Кеш обновлен за ${countTime(
+      `[Cache] -> Кеш обновлен за ${utils.countTime(
         Math.floor(executionTime / 1000),
         true,
       )}..`,
     );
     console.log(
-      `[Cache] -> Задержка ${countTime(timeSec, true)}до нового парсинга..`,
+      `[Cache] -> Задержка ${utils.countTime(
+        timeSec,
+        true,
+      )}до нового парсинга..`,
     );
-    await sleep(timeSec * 1000);
+    await utils.sleep(timeSec * 1000);
     return this.startUpdateOnInterval(timeSec, cores);
   }
 

@@ -1,9 +1,8 @@
 import express from "express";
 import { getChecksumAddress } from "starknet";
 import path from "path";
-import Database from "./database/Database";
 import Cache from "./database/Cache";
-import { countTime } from "./utils/common";
+import { utils, parseSingleContract, Database } from "shared";
 
 const app = express();
 const port = 5000;
@@ -28,7 +27,7 @@ app.use(express.urlencoded());
 
 app.get("/api/tx", async (req, res) => {
   let data = cache.getCacheTx();
-  if (data.data === undefined) {
+  if (!data?.data) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -37,7 +36,7 @@ app.get("/api/tx", async (req, res) => {
 
 app.get("/api/balance", async (req, res) => {
   let data = cache.getCacheBalance();
-  if (data.data === undefined) {
+  if (!data?.data) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -46,7 +45,7 @@ app.get("/api/balance", async (req, res) => {
 
 app.get("/api/volume", async (req, res) => {
   let data = cache.getCacheVolume();
-  if (data.data === undefined) {
+  if (!data?.data) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -55,7 +54,7 @@ app.get("/api/volume", async (req, res) => {
 
 app.get("/api/internalvolume", async (req, res) => {
   let data = cache.getCacheInternalVolume();
-  if (data.data === undefined) {
+  if (!data?.data) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -64,7 +63,7 @@ app.get("/api/internalvolume", async (req, res) => {
 
 app.get("/api/activity", async (req, res) => {
   let data = cache.getCacheActivity();
-  if (data.data === undefined) {
+  if (data?.data) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -73,7 +72,7 @@ app.get("/api/activity", async (req, res) => {
 
 app.get("/api/total", async (req, res) => {
   let data = cache.getCacheTotalWallets();
-  if (data.data === undefined) {
+  if (!data?.data) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -82,21 +81,32 @@ app.get("/api/total", async (req, res) => {
 
 app.post("/api/batchcheck", async (req, res) => {
   let { data } = req.body;
-  if (data === undefined) {
+  if (
+    !data?.wallets ||
+    data.isFreshData === undefined ||
+    data.isFreshData === null
+  ) {
     res.status(500).json({ status: false, error: "Вы не отправили данные." });
   } else {
     try {
+      let isFreshData = data.isFreshData;
+      let wallets = data.wallets;
+      if (isFreshData && wallets.length > 1000) {
+        res.status(500).json({
+          status: false,
+          error: `Вы превысили максимальное количество (1000) кошельков за раз в режиме получения свежих данных из блокчейна.`,
+        });
+        return;
+      }
       let validated = [];
-      for (let address of data) {
+      for (let address of wallets) {
         try {
           validated.push(getChecksumAddress(address).toLowerCase());
         } catch (e) {
-          res
-            .status(500)
-            .json({
-              status: false,
-              error: `Адрес ${address} имеет неправильный формат.`,
-            });
+          res.status(500).json({
+            status: false,
+            error: `Адрес ${address} имеет неправильный формат.`,
+          });
           return;
         }
       }
@@ -105,38 +115,46 @@ app.post("/api/batchcheck", async (req, res) => {
       for (let i = 0; i < validated.length; i++) {
         mapFilter.set(validated[i], i);
       }
-      let result = (await database.readFilteredContracts(filter))
-        .map((v) => {
-          let days = cache.activeCount([v.txTimestamps], 86400);
-          let weeks = cache.activeCount([v.txTimestamps], 604800);
-          let months = cache.activeCount([v.txTimestamps], 2592000);
-          let lastTx =
-            v.txTimestamps.length > 0
-              ? countTime(
-                  new Date().getTime() / 1000 -
-                    (v.txTimestamps.sort().at(-1) as number),
-                  false,
-                )
-              : "";
-          return {
-            contract: v.contract,
-            nonce: v.nonce,
-            balance: v.balance,
-            txTimestamps: `${days.length > 0 ? days : 0} / ${
-              weeks.length > 0 ? weeks : 0
-            } / ${months.length > 0 ? months : 0}`,
-            lastTx,
-            bridgesVolume: v.bridgesVolume,
-            bridgesWithCexVolume: v.bridgesWithCexVolume,
-            internalVolume:
-              cache.getCacheEthPrice() * v.internalVolume +
-              v.internalVolumeStables,
-            index: mapFilter.has(v.contract)
-              ? (mapFilter.get(v.contract) as number)
-              : 0,
-          };
-        })
-        .sort((a, b) => a.index - b.index);
+      let result = (
+        await Promise.all(
+          (await database.readFilteredContracts(filter)).map(async (v) => {
+            if (isFreshData) {
+              let doc = await parseSingleContract(v, database, graphlUrl, 10);
+              if (doc) {
+                v = doc;
+              }
+            }
+            let days = cache.activeCount([v.txTimestamps], 86400);
+            let weeks = cache.activeCount([v.txTimestamps], 604800);
+            let months = cache.activeCount([v.txTimestamps], 2592000);
+            let lastTx =
+              v.txTimestamps.length > 0
+                ? utils.countTime(
+                    new Date().getTime() / 1000 -
+                      (v.txTimestamps.sort().at(-1) as number),
+                    false,
+                  )
+                : "";
+            return {
+              contract: v.contract,
+              nonce: v.nonce,
+              balance: v.balance,
+              txTimestamps: `${days.length > 0 ? days : 0} / ${
+                weeks.length > 0 ? weeks : 0
+              } / ${months.length > 0 ? months : 0}`,
+              lastTx,
+              bridgesVolume: v.bridgesVolume,
+              bridgesWithCexVolume: v.bridgesWithCexVolume,
+              internalVolume:
+                cache.getCacheEthPrice() * v.internalVolume +
+                v.internalVolumeStables,
+              index: mapFilter.has(v.contract)
+                ? (mapFilter.get(v.contract) as number)
+                : 0,
+            };
+          }),
+        )
+      ).sort((a, b) => a.index - b.index);
       res.json({ data: result });
     } catch (e) {
       res

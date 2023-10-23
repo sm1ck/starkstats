@@ -3,7 +3,7 @@ export const sleep: (millis: number) => Promise<void> = async (millis) =>
 
 export const randomIntInRange: (min: number, max: number) => number = (
   min,
-  max
+  max,
 ) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
@@ -39,4 +39,20 @@ export const formatBalance = (value: bigint, decimals: number): number => {
   return +`${negative ? "-" : ""}${integer || "0"}${
     fraction ? `.${fraction}` : ""
   }`;
+};
+
+interface ParseObject {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [index: string]: any;
+}
+
+export const deepMergeSum = (obj1: ParseObject, obj2: ParseObject) => {
+  return Object.keys(obj1).reduce((acc, key) => {
+    if (typeof obj2[key] === "object") {
+      acc[key] = deepMergeSum(obj1[key], obj2[key]);
+    } else if (obj2.hasOwnProperty(key) && !isNaN(parseFloat(obj2[key]))) {
+      acc[key] = obj1[key] + obj2[key];
+    }
+    return acc;
+  }, {} as ParseObject);
 };

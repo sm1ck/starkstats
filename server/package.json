@@ -28,6 +28,7 @@
     "luxon": "^3.4.3",
     "mongoose": "^7.3.2",
     "node-fetch": "^3.3.1",
+    "shared": "file:../shared",
     "starknet": "^5.14.1"
   }
 }

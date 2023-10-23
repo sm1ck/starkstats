@@ -1,6 +1,4 @@
-import Database from "../database/Database";
-import Contract from "../database/models/Contract";
-import parseSingleContract from "./parseSingleContract";
+import { Database, Contract, parseSingleContract } from "shared";
 
 const iterateContracts = async (
   database: Database,

@@ -27,6 +27,7 @@ services:
     volumes:
       - ./client:/node/client
       - ./server:/node/server
+      - ./shared:/node/shared
   parser:
     build:
       context: .
@@ -43,3 +44,4 @@ services:
       - UPDATE_CONTRACTS=false # update every 1 day all contracts for db
     volumes:
       - ./parser:/node/parser
+      - ./shared:/node/shared

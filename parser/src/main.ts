@@ -1,4 +1,4 @@
-import Database from "./database/Database";
+import { Database } from "shared";
 import parseDeploy from "./services/parseDeploy";
 import hourlyContractsUpdate from "./services/hourlyContractsUpdate";
 import addNewContracts from "./services/addNewContracts";
@@ -10,7 +10,7 @@ const is30mNewInsert =
 const isHourlyUpdate = process.env.UPDATE_CONTRACTS === "true" ? true : false;
 const graphlUrl = process.env.GRAPHQL_URL || "";
 const database = new Database(
-  process.env.MONGODB_URL || "mongodb://root:pass@127.0.0.1:27017"
+  process.env.MONGODB_URL || "mongodb://root:pass@127.0.0.1:27017",
 );
 
 if (isParseAll) {

@@ -5,6 +5,7 @@
 /server/node_modules
 /client/node_modules
 /parser/node_modules
+/shared/node_modules
 /mongodb
 docker-compose.yml
 mongo-init.js

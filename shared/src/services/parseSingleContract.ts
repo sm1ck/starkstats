@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch";
-import mongoose from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 import Database from "../database/Database";
 import { IContract } from "../database/models/Contract";
 import {
@@ -24,7 +24,11 @@ const parseSingleContract: (
   database: Database,
   parseUrl: string,
   retries: number,
-) => Promise<void> = async (doc, database, parseUrl, retries) => {
+) => Promise<
+  | void
+  | (Document<unknown, NonNullable<unknown>, IContract> &
+      Omit<IContract & { _id: Types.ObjectId }, never>)
+> = async (doc, database, parseUrl, retries) => {
   try {
     let start = performance.now();
     // first parse
@@ -275,6 +279,7 @@ const parseSingleContract: (
         performance.now() - start
       ).toFixed(2)} ms`,
     );
+    return doc;
   } catch (e) {
     console.log("[Error] -> ");
     console.dir(e);

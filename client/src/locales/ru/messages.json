@@ -6,6 +6,7 @@
     "batchcheckCheckButton": "Отправить",
     "batchcheckDescription": "Дни, недели и месяцы считаются как календарные",
     "batchcheckDescription2": "В список мостов входят StarkGate, Orbiter и LayerSwap, а список бирж входит Okex",
+    "batchcheckFreshData": "Получить свежие данные о кошельках из блокчейна (не больше 1000):",
     "batchcheckTitle": "Получите статистику по своим адресам",
     "bridgeExchangesVolume": "Объем через мост + биржи",
     "bridgeVolume": "Объем через мост",

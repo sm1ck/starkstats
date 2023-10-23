@@ -1,5 +1,6 @@
 FROM node:20-alpine
-WORKDIR /parser
+WORKDIR /node
 COPY parser .
-WORKDIR /parser
+COPY shared .
+WORKDIR /node/parser
 CMD ["npm", "start"]

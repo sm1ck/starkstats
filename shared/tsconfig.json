@@ -11,7 +11,8 @@
     "noImplicitAny": true,
     "useUnknownInCatchVariables": false,
     "inlineSourceMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "declaration": true
   },
   "ts-node": {
     "esm": true,
@@ -19,10 +20,6 @@
   "lib": [
     "esnext"
   ],
-  "include": [
-    "src",
-  ],
-  "exclude": [
-    "node_modules"
-  ],
+  "include": ["src"],
+  "exclude": ["node_modules"],
 }

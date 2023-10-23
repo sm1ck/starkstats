@@ -6,6 +6,7 @@
     "batchcheckCheckButton": "Check",
     "batchcheckDescription": "Days, weeks, and months are considered as calendar periods",
     "batchcheckDescription2": "The list of bridges includes StarkGate, Orbiter, LayerSwap, and the list of exchanges includes OKX",
+    "batchcheckFreshData": "Get up-to-date wallet data from the blockchain (no more than 1000):",
     "batchcheckTitle": "Get Statistics for your addresses",
     "bridgeExchangesVolume": "Volume through bridge + exchanges",
     "bridgeVolume": "Volume through bridge",

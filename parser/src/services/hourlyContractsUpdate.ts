@@ -1,6 +1,5 @@
-import Database from "../database/Database";
 import iterateContracts from "./iterateContracts";
-import { countTime, sleep } from "../utils/common";
+import { Database, utils } from "shared";
 
 const hourlyContractsUpdate = async (
   timeUpdateSec: number,
@@ -10,12 +9,12 @@ const hourlyContractsUpdate = async (
   for (;;) {
     await iterateContracts(database, false, parseUrl);
     console.log(
-      `[Wait] -> Задержка ${countTime(
+      `[Wait] -> Задержка ${utils.countTime(
         timeUpdateSec,
         true,
       )}до нового обновления контрактов..`,
     );
-    await sleep(timeUpdateSec * 1000);
+    await utils.sleep(timeUpdateSec * 1000);
   }
 };
 
