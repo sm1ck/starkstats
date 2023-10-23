@@ -1,29 +1,30 @@
-import mongoose from "mongoose";
+import mongoose, { FilterQuery } from "mongoose";
 import Contract, { IContract } from "./models/Contract";
 
 class Database {
-  public filterOutdated = { $and: [
+  public filterOutdated = {
+    $and: [
       {
-          nonce: {
-              "$ne": 0
-          }
+        nonce: {
+          $ne: 0,
+        },
       },
-      {  
-          $and: [ 
-              { 
-                  nonce: { 
-                      "$ne": 1 
-                  }
-              },
-              {
-                  
-                  balance: { 
-                      "$ne": 0
-                  }
-              }
-          ]
-      }
-  ]};
+      {
+        $and: [
+          {
+            nonce: {
+              $ne: 1,
+            },
+          },
+          {
+            balance: {
+              $ne: 0,
+            },
+          },
+        ],
+      },
+    ],
+  };
 
   constructor(public url: string) {
     this.url = url;
@@ -42,15 +43,13 @@ class Database {
   async updateContract(doc: mongoose.HydratedDocument<IContract>) {
     await doc.save();
     console.log(
-      `[Update] -> Контракт: ${doc.contract}, всего транзакций: ${doc.nonce}, баланс: ${doc.balance} ETH, объем через мост: ${doc.bridgesVolume} ETH, объем через мост + биржи: ${doc.bridgesWithCexVolume} ETH, объем внутри сети: ${doc.internalVolume} ETH, объем внутри сети: ${doc.internalVolumeStables}$`
+      `[Update] -> Контракт: ${doc.contract}, всего транзакций: ${doc.nonce}, баланс: ${doc.balance} ETH, объем через мост: ${doc.bridgesVolume} ETH, объем через мост + биржи: ${doc.bridgesWithCexVolume} ETH, объем внутри сети: ${doc.internalVolume} ETH, объем внутри сети: ${doc.internalVolumeStables}$`,
     );
   }
 
   async deleteContract(doc: mongoose.HydratedDocument<IContract>) {
     await doc.deleteOne();
-    console.log(
-      `[Update] -> Контракт ${doc.contract} удален..`
-    );
+    console.log(`[Update] -> Контракт ${doc.contract} удален..`);
   }
 
   async readContracts() {
@@ -58,8 +57,15 @@ class Database {
     return contracts;
   }
 
-  async readFilteredContracts(filter: any, limit?: number, skip?: number) {
-    let contracts = limit !== undefined && skip !== undefined ? await Contract.find(filter).limit(limit).skip(skip) : await Contract.find(filter);
+  async readFilteredContracts(
+    filter: FilterQuery<IContract>,
+    limit?: number,
+    skip?: number,
+  ) {
+    let contracts =
+      limit !== undefined && skip !== undefined
+        ? await Contract.find(filter).limit(limit).skip(skip)
+        : await Contract.find(filter);
     return contracts;
   }
 }

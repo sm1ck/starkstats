@@ -5,7 +5,7 @@ import parseSingleContract from "./parseSingleContract";
 const iterateContracts = async (
   database: Database,
   isNew: boolean,
-  parseUrl: string
+  parseUrl: string,
 ) => {
   let i = 0;
   for await (let doc of isNew

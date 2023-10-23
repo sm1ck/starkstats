@@ -4,11 +4,11 @@ export interface IContract {
   contract: string;
   nonce: number;
   balance: number;
-  txTimestamps: number[],
-  bridgesVolume: number,
-  bridgesWithCexVolume: number,
-  internalVolume: number,
-  internalVolumeStables: number,
+  txTimestamps: number[];
+  bridgesVolume: number;
+  bridgesWithCexVolume: number;
+  internalVolume: number;
+  internalVolumeStables: number;
 }
 
 const schema = new mongoose.Schema<IContract>({

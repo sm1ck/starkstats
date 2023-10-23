@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch";
 import Database from "../database/Database";
 import Contract, { IContract } from "../database/models/Contract";
@@ -12,10 +13,21 @@ const parseDeploy: (
   database: Database,
   table: string,
   slowMode: boolean,
-  parseUrl: string
-) => Promise<void> = async (offset, minTime, database, table, slowMode, parseUrl) => {
+  parseUrl: string,
+) => Promise<void> = async (
+  offset,
+  minTime,
+  database,
+  table,
+  slowMode,
+  parseUrl,
+) => {
   try {
-    let whereTime = minTime ? `, where: {time: {_gte: "${new Date(Math.round(minTime * 1000)).toISOString()}"}}` : "";
+    let whereTime = minTime
+      ? `, where: {time: {_gte: "${new Date(
+          Math.round(minTime * 1000),
+        ).toISOString()}"}}`
+      : "";
     // first parse
     let parse = await fetch(parseUrl, {
       method: "POST",
@@ -24,29 +36,38 @@ const parseDeploy: (
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        query:
-          `query MyQuery { ${table}(limit: ${defaultLimit}, offset: ${offset ?? 0}${whereTime}) { contract { hash, class_id } time } }`,
+        query: `query MyQuery { ${table}(limit: ${defaultLimit}, offset: ${
+          offset ?? 0
+        }${whereTime}) { contract { hash, class_id } time } }`,
       }),
     });
     let json: any = await parse.json();
-    let contracts = json.data[table].reduce((acc: Array<mongoose.HydratedDocument<IContract>>, curr: any) => {
-      if (accountIds.includes(curr.contract.class_id)) {
-        acc.push(new Contract({
-          contract: convertToNormalAddress(curr.contract.hash),
-          nonce: 0,
-          balance: 0,
-          txTimestamps: [],
-          bridgesVolume: 0,
-          bridgesWithCexVolume: 0,
-          internalVolume: 0,
-          internalVolumeStables: 0,
-
-        }));
-      } else {
-        console.log(`[Insert] -> ${convertToNormalAddress(curr.contract.hash)} имеет class id ${curr.contract.class_id}, пропускаем..`);
-      }
-      return acc;
-    }, []);
+    let contracts = json.data[table].reduce(
+      (acc: Array<mongoose.HydratedDocument<IContract>>, curr: any) => {
+        if (accountIds.includes(curr.contract.class_id)) {
+          acc.push(
+            new Contract({
+              contract: convertToNormalAddress(curr.contract.hash),
+              nonce: 0,
+              balance: 0,
+              txTimestamps: [],
+              bridgesVolume: 0,
+              bridgesWithCexVolume: 0,
+              internalVolume: 0,
+              internalVolumeStables: 0,
+            }),
+          );
+        } else {
+          console.log(
+            `[Insert] -> ${convertToNormalAddress(
+              curr.contract.hash,
+            )} имеет class id ${curr.contract.class_id}, пропускаем..`,
+          );
+        }
+        return acc;
+      },
+      [],
+    );
     // set offset
     offset = offset ? offset + defaultLimit : defaultLimit;
     // push to db
@@ -55,12 +76,21 @@ const parseDeploy: (
     } catch (e) {
       if (e.stack.includes("duplicate key")) {
         let successInsert = e?.result?.insertedCount;
-        console.log(`[Insert] -> Данные уже есть в таблице, успешно сохранено ${successInsert} контрактов..`);
+        console.log(
+          `[Insert] -> Данные уже есть в таблице, успешно сохранено ${successInsert} контрактов..`,
+        );
         if (contracts.length <= 0) {
           return;
         } else {
           //await sleep(200);
-          return parseDeploy(offset, minTime, database, table, slowMode, parseUrl);
+          return parseDeploy(
+            offset,
+            minTime,
+            database,
+            table,
+            slowMode,
+            parseUrl,
+          );
         }
       }
     }
