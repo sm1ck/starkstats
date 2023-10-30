@@ -1,31 +1,31 @@
 # starkstats
 
-Собирает статистику по StarkNet со starkscan.co и представляет ее в виде графиков, также есть опция проверить свои адреса.
+Collects StarkNet stats and presents them in graphs, there is also an option to check your addresses.
 
-## Задеплоенный сервис
+## Deployed service
 
-По адресу https://starkstats.xyz есть рабочая версия.
+There is a working version at https://starkstats.xyz.
 
-Проверка своих адресов: https://starkstats.xyz/batchcheck
+Check your addresses: https://starkstats.xyz/batchcheck
 
-## Структура
+## Structure
 
 ### client
 
-Клиент сделан на React + TypeScript, типизация сделана не везде. Для роутинга используется react-router-dom.
+The client is made in React + TypeScript, typing is not done everywhere. The react-router-dom is used for routing.
 
 ### server
 
-Сервер сделан на Express + TypeScript, сервер сохраняет данные в MongoDB, также хранит данные в кеше для быстрого доступа и отдает через api.
+Server is made on Express + TypeScript, server stores data in MongoDB, also stores data in cache for quick access and gives it via api.
 
 ### parser
 
-Парсер сделан на TypeScript. Аггрегирует данные с GraphQL dipdup https://github.com/dipdup-io/starknet-indexer в mongodb.
+Aggregates data from localhost GraphQL (https://github.com/dipdup-io/starknet-indexer) into mongodb.
 
 ### shared
 
-Пакет с переиспользуемыми функциями, классами.
+Package with reused functions, classes.
 
 ### docker-compose
 
-Деплой происходит через docker-compose, используются контейнеры для сервера и базы данных. Также потом можно через nginx проксировать сервер в Сеть и использовать SSL сертефикаты.
+Deployment is done via docker-compose, containers for server and database are used. It is also possible to proxy the server to the network via nginx and use SSL certificates.
