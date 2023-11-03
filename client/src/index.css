@@ -11,6 +11,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html, body, #root {
+  height: 100vh;
+}
+
 :root {
   --color-bg: #0c0c4f;
   --color-active: #1882c9;
@@ -19,6 +23,11 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+h1 {
+  margin-block-start: 0.5em;
+  margin-block-end: 0.5em;
 }
 
 ul {
@@ -56,6 +65,16 @@ header>a {
   margin-left: 1%;
 }
 
+footer {
+  background-color: var(--color-bg);
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2%;
+}
+
 .language-flag {
   height: 14px;
   width: 24px;
@@ -78,6 +97,15 @@ h1 {
 .logo {
   object-fit: contain;
   height: 2em;
+}
+
+.links-logo {
+  object-fit: contain;
+  height: 2em;
+}
+
+.links-logo:hover {
+  opacity: 0.75;
 }
 
 .container {
@@ -231,6 +259,13 @@ li {
 
 .mobileMenu {
   display: none;
+}
+
+.layout {
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 100%;
 }
 
 @media (max-width: 1280px) {

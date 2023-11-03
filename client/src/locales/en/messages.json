@@ -22,8 +22,6 @@
     "indexDescriptionDetails2": "The data is taken from local StarkNet indexator",
     "indexDescriptionDetails3": ". Updating the old database is a lengthy process, and it happens every 6 hours.",
     "indexDescriptionDetails4": "Important change: bridge volume and internal volume now count both ways, both transfer from and to account.",
-    "indexLinks": "Links",
-    "indexLinksAuthor": "Author",
     "indexTotal": "Total addresses",
     "indexTotalExcluding": "Total addresses excluding obsolete wallets",
     "indexTotalExcludingDetails": "The wallets could be created for free in the old version of StarkNet",

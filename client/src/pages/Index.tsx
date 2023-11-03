@@ -36,8 +36,5 @@ export const Index: () => JSX.Element = () => {
             <br />
             {t("indexDescriptionDetails4")}
         </div>
-        <h3>{t("indexLinks")}</h3>
-        Github: <a href="https://github.com/sm1ck/starkstats" target="_blank" rel="noreferrer">github.com/sm1ck/starkstats</a><br />
-        {t("indexLinksAuthor")}: <a href="https://t.me/web3_coding" target="_blank" rel="noreferrer">t.me/web3_coding</a>
     </div>;
 };
