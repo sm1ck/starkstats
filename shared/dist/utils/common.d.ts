@@ -5,7 +5,7 @@ export declare const convertToNormalAddress: (address: string) => string;
 export declare const convertToGraphQlAddress: (address: string) => string;
 export declare const formatBalance: (value: bigint, decimals: number) => number;
 interface ParseObject {
-    [index: string]: any;
+    [index: string]: number | string | ParseObject;
 }
 export declare const deepMergeSum: (obj1: ParseObject, obj2: ParseObject) => ParseObject;
 export {};

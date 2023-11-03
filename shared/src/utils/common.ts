@@ -42,16 +42,30 @@ export const formatBalance = (value: bigint, decimals: number): number => {
 };
 
 interface ParseObject {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [index: string]: any;
+  [index: string]: number | string | ParseObject;
 }
+
+const isNumberOrString = (value: unknown): value is number | string =>
+  typeof value === "string" || typeof value === "number";
 
 export const deepMergeSum = (obj1: ParseObject, obj2: ParseObject) => {
   return Object.keys(obj1).reduce((acc, key) => {
-    if (typeof obj2[key] === "object") {
-      acc[key] = deepMergeSum(obj1[key], obj2[key]);
-    } else if (obj2.hasOwnProperty(key) && !isNaN(parseFloat(obj2[key]))) {
-      acc[key] = obj1[key] + obj2[key];
+    let key1 = obj1[key];
+    let key2 = obj2[key];
+    if (!isNumberOrString(key1) && !isNumberOrString(key2)) {
+      acc[key] = deepMergeSum(key1, key2);
+    } else if (isNumberOrString(key1) && isNumberOrString(key2)) {
+      let num1 = parseFloat(String(key1));
+      let num2 = parseFloat(String(key2));
+      if (!isNaN(num1) && !isNaN(num2)) {
+        acc[key] = num1 + num2;
+      } else if (!isNaN(num1)) {
+        acc[key] = num1;
+      } else if (!isNaN(num2)) {
+        acc[key] = num2;
+      } else {
+        acc[key] = 0;
+      }
     }
     return acc;
   }, {} as ParseObject);
