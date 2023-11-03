@@ -49,6 +49,8 @@
     "volumeTitle": "Статистика по объему ETH через мосты StarkGate / Orbiter / LayerSwap пользователей",
     "volumeTitle2": "Статистика по объему ETH через мосты и пополнение с Okex",
     "internalVolumeTitle": "Статистика по объему внутри сети без учета мостов и пополнения с Okex",
+    "footerForEcosystem1": "Разработан для развития",
+    "footerForEcosystem2": "экосистемы",
     "week": "неделя",
     "weeks": "недели",
     "weeks2": "недель",
