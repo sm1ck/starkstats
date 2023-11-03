@@ -4,6 +4,10 @@ import parseContractCallData from "./services/parseContractCallData";
 import parseSingleContract from "./services/parseSingleContract";
 import * as utils from "./utils/common";
 import * as definedConst from "./utils/definedConst";
+import * as jsonaddress from "./json/JSONAddress";
+import * as jsondata from "./json/JSONData";
+import * as jsoncontracts from "./json/JSONContracts";
+import * as jsonerror from "./json/JSONError";
 
 export {
   Database,
@@ -13,4 +17,8 @@ export {
   parseContractCallData,
   utils,
   definedConst,
+  jsonaddress,
+  jsonerror,
+  jsondata,
+  jsoncontracts,
 };

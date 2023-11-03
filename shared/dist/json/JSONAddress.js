@@ -1,0 +1,2 @@
+export const isJSONAddress = (json) => json.data !== undefined;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiSlNPTkFkZHJlc3MuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvanNvbi9KU09OQWRkcmVzcy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFnQkEsTUFBTSxDQUFDLE1BQU0sYUFBYSxHQUFHLENBQUMsSUFBYSxFQUF1QixFQUFFLENBQ2pFLElBQW9CLENBQUMsSUFBSSxLQUFLLFNBQVMsQ0FBQyJ9

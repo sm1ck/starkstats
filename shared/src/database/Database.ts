@@ -35,7 +35,14 @@ class Database {
     await mongoose.connect(this.url);
   }
 
-  async writeContracts(contracts: Array<typeof Contract>) {
+  async writeContracts(
+    contracts:
+      | Array<typeof Contract>
+      | (mongoose.Document<unknown, NonNullable<unknown>, IContract> &
+          IContract & {
+            _id: mongoose.Types.ObjectId;
+          })[],
+  ) {
     await Contract.insertMany(contracts, { ordered: false });
     console.log(`[Insert] -> Сохранено ${contracts.length} контрактов..`);
   }

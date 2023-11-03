@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch";
 import mongoose from "mongoose";
-import { Database, utils, definedConst, Contract, IContract } from "shared";
+import {
+  Database,
+  utils,
+  definedConst,
+  Contract,
+  IContract,
+  jsoncontracts,
+} from "shared";
 
 const parseDeploy: (
   offset: number | null,
@@ -39,8 +46,18 @@ const parseDeploy: (
         }${whereTime}) { contract { hash, class_id } time } }`,
       }),
     });
-    let json: any = await parse.json();
-    let contracts = json.data[table].reduce(
+    let json: jsoncontracts.JSONContracts =
+      (await parse.json()) as jsoncontracts.JSONContracts;
+    let reducable;
+    if (jsoncontracts.isDeploy(json.data.deploy) && table === "deploy") {
+      reducable = json.data.deploy;
+    } else if (
+      jsoncontracts.isDeployAccounts(json.data.deploy_account) &&
+      table === "deploy_account"
+    ) {
+      reducable = json.data.deploy_account;
+    }
+    let contracts = reducable?.reduce(
       (acc: Array<mongoose.HydratedDocument<IContract>>, curr: any) => {
         if (definedConst.accountIds.includes(curr.contract.class_id)) {
           acc.push(
@@ -72,14 +89,18 @@ const parseDeploy: (
       : definedConst.defaultLimit;
     // push to db
     try {
-      await database.writeContracts(contracts);
+      if (contracts) {
+        await database.writeContracts(contracts);
+      } else {
+        console.log(`[Insert] -> Ошибка с типом контрактов..`);
+      }
     } catch (e) {
       if (e.stack.includes("duplicate key")) {
         let successInsert = e?.result?.insertedCount;
         console.log(
           `[Insert] -> Данные уже есть в таблице, успешно сохранено ${successInsert} контрактов..`,
         );
-        if (contracts.length <= 0) {
+        if (contracts && contracts.length <= 0) {
           return;
         } else {
           //await sleep(200);
@@ -94,7 +115,7 @@ const parseDeploy: (
         }
       }
     }
-    if (contracts.length <= 0) {
+    if (contracts && contracts.length <= 0) {
       console.log("[Insert] -> Данных для парсинга больше нет..");
       return;
     } else {

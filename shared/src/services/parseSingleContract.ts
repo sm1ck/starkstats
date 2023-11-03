@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch";
 import mongoose, { Document, Types } from "mongoose";
 import Database from "../database/Database";
@@ -18,6 +17,16 @@ import {
   stableIdentifiers18,
 } from "../utils/definedConst";
 import parseContractCallData from "./parseContractCallData";
+import { JSONAddressOrError, isJSONAddress } from "../json/JSONAddress";
+import { isJSONError } from "../json/JSONError";
+import {
+  Deploy,
+  DeployAccount,
+  Invoke,
+  JSONDataOrError,
+  Transfer,
+  isJSONData,
+} from "../json/JSONData";
 
 const parseSingleContract: (
   doc: mongoose.HydratedDocument<IContract>,
@@ -44,14 +53,11 @@ const parseSingleContract: (
         )}"}}) { id } }`,
       }),
     });
-    let json: any = await parse.json();
-    if (json?.data?.address?.length <= 0) {
-      return;
-    }
+    let jsonAddress = (await parse.json()) as JSONAddressOrError;
     // errors
-    if (json?.errors?.length > 0) {
+    if (isJSONError(jsonAddress) && jsonAddress.errors.length > 0) {
       console.log("[Error] -> Ошибка при получении адреса:");
-      for (let error of json.errors) {
+      for (let error of jsonAddress.errors) {
         if (error.message) {
           console.dir(error.message);
         }
@@ -61,7 +67,12 @@ const parseSingleContract: (
         }
       }
     }
-    let id = json.data.address[0].id;
+    if (!isJSONAddress(jsonAddress) || jsonAddress.data.address.length <= 0) {
+      console.log("[Error] -> JSON не является адресом:");
+      console.dir(jsonAddress);
+      return;
+    }
+    let id = jsonAddress.data.address[0].id;
     // by id
     parse = await fetch(parseUrl, {
       method: "POST",
@@ -73,15 +84,20 @@ const parseSingleContract: (
         query: `query MyQuery { invoke( where: {contract: {id: {_eq: ${id}}}} ) { time parsed_calldata } transfer( where: {_or: [{from_id: {_eq: ${id}}} {to_id: {_eq: ${id}}}]} ) { from { hash } to { hash } token { contract { hash } } amount } deploy(where: {contract: {id: {_eq: ${id}}}}) { time } deploy_account(where: {contract: {id: {_eq: ${id}}}}) { time } token_balance(where: {owner_id: {_eq: ${id}}, token_id: {_eq: 0}}) { balance } }`,
       }),
     });
-    json = await parse.json();
+    let json: JSONDataOrError = (await parse.json()) as JSONDataOrError;
     // errors
-    if (json?.errors?.length > 0) {
+    if (isJSONError(json) && json.errors.length > 0) {
       console.log("[Error] -> Ошибка при получении информации о контракте:");
       for (let error of json.errors) {
         if (error.message) {
           console.dir(error.message);
         }
       }
+    }
+    if (!isJSONData(json)) {
+      console.log("[Error] -> JSON не является правильным типом данных:");
+      console.dir(json);
+      return;
     }
     let nonce = +json.data.invoke.length + 1; // 1 -> deploy tx
     let balance =
@@ -95,13 +111,16 @@ const parseSingleContract: (
       doc.balance = balance;
     }
     let txTimestamps: Array<number> = [];
-    txTimestamps = json.data.deploy.reduce((acc: Array<number>, curr: any) => {
-      acc.push(Math.floor(new Date(curr.time).getTime() / 1000));
-      return acc;
-    }, []);
+    txTimestamps = json.data.deploy.reduce(
+      (acc: Array<number>, curr: Deploy) => {
+        acc.push(Math.floor(new Date(curr.time).getTime() / 1000));
+        return acc;
+      },
+      [],
+    );
     if (txTimestamps.length === 0) {
       txTimestamps = json.data.deploy_account.reduce(
-        (acc: Array<number>, curr: any) => {
+        (acc: Array<number>, curr: DeployAccount) => {
           acc.push(Math.floor(new Date(curr.time).getTime() / 1000));
           return acc;
         },
@@ -109,7 +128,7 @@ const parseSingleContract: (
       );
     }
     let invokeTimestamps: Array<number> = json.data.invoke.reduce(
-      (acc: Array<number>, curr: any) => {
+      (acc: Array<number>, curr: Invoke) => {
         acc.push(Math.floor(new Date(curr.time).getTime() / 1000));
         return acc;
       },
@@ -119,18 +138,20 @@ const parseSingleContract: (
     let invokeSwapVolumeEth = 0;
     let invokeSwapVolumeStables = 0;
     for (let invoke of json.data.invoke) {
-      let result = parseContractCallData(invoke.parsed_calldata);
-      if (result.token.includes(ethIdentifier)) {
-        invokeSwapVolumeEth += result.amount;
-      } else if (
-        stableIdentifiers18.some((v) => result.token.includes(v)) ||
-        stableIdentifiers6.some((v) => result.token.includes(v))
-      ) {
-        invokeSwapVolumeStables += result.amount;
+      if (invoke.parsed_calldata !== null) {
+        let result = parseContractCallData(invoke.parsed_calldata);
+        if (result.token.includes(ethIdentifier)) {
+          invokeSwapVolumeEth += result.amount;
+        } else if (
+          stableIdentifiers18.some((v) => result.token.includes(v)) ||
+          stableIdentifiers6.some((v) => result.token.includes(v))
+        ) {
+          invokeSwapVolumeStables += result.amount;
+        }
       }
     }
     let bridgesVolume: number = json.data.transfer.reduce(
-      (total: number, curr: any) => {
+      (total: number, curr: Transfer) => {
         if (
           curr?.from?.hash &&
           curr?.to?.hash &&
@@ -151,7 +172,7 @@ const parseSingleContract: (
       0,
     );
     let bridgesWithCexVolume: number = json.data.transfer.reduce(
-      (total: number, curr: any) => {
+      (total: number, curr: Transfer) => {
         if (
           curr?.from?.hash &&
           curr?.to?.hash &&
@@ -177,7 +198,7 @@ const parseSingleContract: (
       0,
     );
     let internalVolume: number = json.data.transfer.reduce(
-      (total: number, curr: any) => {
+      (total: number, curr: Transfer) => {
         if (
           curr?.from?.hash &&
           curr?.to?.hash &&
@@ -198,7 +219,7 @@ const parseSingleContract: (
       0,
     );
     let internalVolumeStables6: number = json.data.transfer.reduce(
-      (total: number, curr: any) => {
+      (total: number, curr: Transfer) => {
         if (
           curr?.from?.hash &&
           curr?.to?.hash &&
@@ -219,7 +240,7 @@ const parseSingleContract: (
       0,
     );
     let internalVolumeStables18: number = json.data.transfer.reduce(
-      (total: number, curr: any) => {
+      (total: number, curr: Transfer) => {
         if (
           curr?.from?.hash &&
           curr?.to?.hash &&

@@ -25,7 +25,9 @@ declare class Database {
     };
     constructor(url: string);
     connect(): Promise<void>;
-    writeContracts(contracts: Array<typeof Contract>): Promise<void>;
+    writeContracts(contracts: Array<typeof Contract> | (mongoose.Document<unknown, NonNullable<unknown>, IContract> & IContract & {
+        _id: mongoose.Types.ObjectId;
+    })[]): Promise<void>;
     updateContract(doc: mongoose.HydratedDocument<IContract>): Promise<void>;
     deleteContract(doc: mongoose.HydratedDocument<IContract>): Promise<void>;
     readContracts(): Promise<(mongoose.Document<unknown, {}, IContract> & IContract & {
