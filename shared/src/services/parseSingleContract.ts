@@ -302,7 +302,7 @@ const parseSingleContract: (
     );
     return doc;
   } catch (e) {
-    console.log("[Error] -> ");
+    console.log("[Update Error] -> ");
     console.dir(e);
     if (retries > 0 && !e?.message?.includes("string longer than")) {
       await sleep(1000);

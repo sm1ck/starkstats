@@ -123,7 +123,7 @@ const parseDeploy: (
       return parseDeploy(offset, minTime, database, table, slowMode, parseUrl);
     }
   } catch (e) {
-    console.log("[Error] -> ", e);
+    console.log("[Insert Error] -> ", e);
     await utils.sleep(1000);
     return parseDeploy(offset, minTime, database, table, slowMode, parseUrl);
   }

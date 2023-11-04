@@ -68,7 +68,7 @@ export interface Token {
 export type JSONDataOrError = JSONError | JSONData;
 
 export const isJSONData = (json: unknown): json is JSONData =>
-  (json as JSONData).data !== undefined;
+  (json as JSONData)?.data !== undefined;
 
 export const isParsedCalldataContainsCalls = (
   calls: unknown,
@@ -79,4 +79,4 @@ export const isParsedCalldataContainsCallArrays = (
 ): calls is CallArray[] => calls !== undefined;
 
 export const isCall = (call: unknown): call is Call =>
-  (call as Call).to !== undefined && (call as Call).selector !== undefined;
+  (call as Call)?.to !== undefined && (call as Call)?.selector !== undefined;

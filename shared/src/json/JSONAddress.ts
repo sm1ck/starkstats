@@ -15,4 +15,4 @@ export interface Address {
 export type JSONAddressOrError = JSONError | JSONAddress;
 
 export const isJSONAddress = (json: unknown): json is JSONAddress =>
-  (json as JSONAddress).data !== undefined;
+  (json as JSONAddress)?.data !== undefined;

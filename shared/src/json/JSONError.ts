@@ -13,4 +13,4 @@ export interface Extensions {
 }
 
 export const isJSONError = (json: unknown): json is JSONError =>
-  (json as JSONError).errors !== undefined;
+  (json as JSONError)?.errors !== undefined;

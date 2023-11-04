@@ -23,10 +23,10 @@ export interface Contract {
 }
 
 export const isJSONContracts = (json: unknown): json is JSONContracts =>
-  (json as JSONContracts).data !== undefined;
+  (json as JSONContracts)?.data !== undefined;
 
 export const isDeploy = (json: unknown): json is Deploy[] =>
-  (json as Deploy[]).length !== undefined;
+  (json as Deploy[])?.length !== undefined;
 
 export const isDeployAccounts = (json: unknown): json is DeployAccount[] =>
-  (json as DeployAccount[]).length !== undefined;
+  (json as DeployAccount[])?.length !== undefined;

@@ -182,7 +182,7 @@ const parseContractCallData = (calldata) => {
         }
     }
     catch (e) {
-        console.log("[Parse calldata error] -> ", e);
+        console.log("[Parse Calldata Error] -> ", e);
     }
     return {
         token: "",
