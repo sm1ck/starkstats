@@ -268,6 +268,50 @@ li {
   grid-template-columns: 100%;
 }
 
+.form-group {
+  display: block;
+}
+
+.form-group input {
+  padding: 0;
+  height: initial;
+  width: initial;
+  margin-bottom: 0;
+  display: none;
+  cursor: pointer;
+}
+
+.form-group label {
+  position: relative;
+  cursor: pointer;
+}
+
+.form-group label:before {
+  content: '';
+  background-color: transparent;
+  border: 2px solid var(--color-bg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05);
+  padding: 0.5em;
+  display: inline-block;
+  position: relative;
+  vertical-align: sub;
+  cursor: pointer;
+  margin-right: 0.5em;
+}
+
+.form-group input:checked + label:after {
+  content: '';
+  display: block;
+  position: absolute;
+  height: 0.8em;
+  left: 0.4em;
+  top: 0.1em;
+  width: 0.3em;
+  border: solid var(--color-bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
 @media (max-width: 1280px) {
   header>a {
     font-size: 0.95rem;

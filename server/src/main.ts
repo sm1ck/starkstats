@@ -115,47 +115,54 @@ app.post("/api/batchcheck", async (req, res) => {
       for (let i = 0; i < validated.length; i++) {
         mapFilter.set(validated[i], i);
       }
-      let result = (
-        await Promise.all(
-          (await database.readFilteredContracts(filter)).map(async (v) => {
-            if (isFreshData) {
-              let doc = await parseSingleContract(v, database, graphlUrl, 10);
-              if (doc) {
-                v = doc;
-              }
+      let result = await Promise.all(
+        (await database.readFilteredContracts(filter)).map(async (v) => {
+          if (isFreshData) {
+            let doc = await parseSingleContract(v, database, graphlUrl, 10);
+            if (doc) {
+              v = doc;
             }
-            let days = cache.activeCount([v.txTimestamps], 86400);
-            let weeks = cache.activeCount([v.txTimestamps], 604800);
-            let months = cache.activeCount([v.txTimestamps], 2592000);
-            let lastTx =
-              v.txTimestamps.length > 0
-                ? utils.countTime(
-                    new Date().getTime() / 1000 -
-                      (v.txTimestamps.sort().at(-1) as number),
-                    false,
-                  )
-                : "";
-            return {
-              contract: v.contract,
-              nonce: v.nonce,
-              balance: v.balance,
-              txTimestamps: `${days.length > 0 ? days : 0} / ${
-                weeks.length > 0 ? weeks : 0
-              } / ${months.length > 0 ? months : 0}`,
-              lastTx,
-              bridgesVolume: v.bridgesVolume,
-              bridgesWithCexVolume: v.bridgesWithCexVolume,
-              internalVolume:
-                cache.getCacheEthPrice() * v.internalVolume +
-                v.internalVolumeStables,
-              index: mapFilter.has(v.contract)
-                ? (mapFilter.get(v.contract) as number)
-                : 0,
-            };
-          }),
-        )
-      ).sort((a, b) => a.index - b.index);
-      res.json({ data: result });
+          }
+          let days = cache.activeCount([v.txTimestamps], 86400);
+          let weeks = cache.activeCount([v.txTimestamps], 604800);
+          let months = cache.activeCount([v.txTimestamps], 2592000);
+          let lastTx =
+            v.txTimestamps.length > 0
+              ? utils.countTime(
+                  new Date().getTime() / 1000 -
+                    (v.txTimestamps.sort().at(-1) as number),
+                  false,
+                )
+              : "";
+          return {
+            contract: v.contract,
+            nonce: v.nonce,
+            balance: v.balance,
+            txTimestamps: `${days.length > 0 ? days : 0} / ${
+              weeks.length > 0 ? weeks : 0
+            } / ${months.length > 0 ? months : 0}`,
+            lastTx,
+            bridgesVolume: v.bridgesVolume,
+            bridgesWithCexVolume: v.bridgesWithCexVolume,
+            internalVolume:
+              cache.getCacheEthPrice() * v.internalVolume +
+              v.internalVolumeStables,
+            index: mapFilter.has(v.contract)
+              ? (mapFilter.get(v.contract) as number)
+              : 0,
+          };
+        }),
+      ).catch((e) => {
+        console.log(`[Promise Error] ->`, e);
+        res.status(500).json({
+          status: false,
+          error: "Ошибка в ходе запроса к базе данных.",
+        });
+      });
+      if (result) {
+        result = result.sort((a, b) => a.index - b.index);
+        res.json({ data: result });
+      }
     } catch (e) {
       res
         .status(500)
