@@ -88,32 +88,10 @@ const parseDeploy: (
       ? offset + definedConst.defaultLimit
       : definedConst.defaultLimit;
     // push to db
-    try {
-      if (contracts) {
-        await database.writeContracts(contracts);
-      } else {
-        console.log(`[Insert] -> Ошибка с типом контрактов..`);
-      }
-    } catch (e) {
-      if (e.stack.includes("duplicate key")) {
-        let successInsert = e?.result?.insertedCount;
-        console.log(
-          `[Insert] -> Данные уже есть в таблице, успешно сохранено ${successInsert} контрактов..`,
-        );
-        if (contracts && contracts.length <= 0) {
-          return;
-        } else {
-          //await sleep(200);
-          return parseDeploy(
-            offset,
-            minTime,
-            database,
-            table,
-            slowMode,
-            parseUrl,
-          );
-        }
-      }
+    if (contracts) {
+      await database.writeContracts(contracts);
+    } else {
+      console.log(`[Insert] -> Ошибка с типом контрактов..`);
     }
     if (contracts && contracts.length <= 0) {
       console.log("[Insert] -> Данных для парсинга больше нет..");
