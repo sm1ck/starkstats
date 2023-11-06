@@ -25,8 +25,14 @@ export const Activity = () => {
                     day: "numeric",
                 };
                 let label = `${v.y}, ${new Intl.DateTimeFormat(i18n.language === "ru" ? "ru-RU" : "en-US", options).format(date)}`;
+                options = {
+                    year: "numeric",
+                    month: "short",
+                };
+                let shortLabel = new Intl.DateTimeFormat(i18n.language === "ru" ? "ru-RU" : "en-US", options).format(date);
                 return {
                     label,
+                    shortLabel,
                     x: v.x,
                     y: v.y
                 }
@@ -131,7 +137,7 @@ export const Activity = () => {
                     <VictoryScatter size={2} />
                 </VictoryGroup>
                 <VictoryAxis dependentAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
-                <VictoryAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
+                <VictoryAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => Number.isInteger(x) && x <= langAggregateUsers?.data?.length ? langAggregateUsers?.data[x]?.shortLabel : null} />
             </VictoryChart>}
         </div>
 };

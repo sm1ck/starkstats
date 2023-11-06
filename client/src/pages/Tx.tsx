@@ -1,6 +1,6 @@
 import { Watch } from "react-loader-spinner";
 import { useFetch } from "../hooks/fetchHook";
-import { VictoryAxis, VictoryChart, VictoryGroup, VictoryLine, VictoryPie, VictoryScatter, VictoryTooltip, VictoryZoomContainer } from "victory";
+import { VictoryAxis, VictoryChart, VictoryGroup, VictoryLabel, VictoryLine, VictoryPie, VictoryScatter, VictoryTooltip, VictoryZoomContainer } from "victory";
 import { useTitle } from "../hooks/titleHook";
 import { midColormap, sumPercent } from "../utils/common";
 import { useTranslation } from "react-i18next";
@@ -25,8 +25,14 @@ export const Tx = () => {
                     day: "numeric",
                 };
                 let label = `${v.y}, ${new Intl.DateTimeFormat(i18n.language === "ru" ? "ru-RU" : "en-US", options).format(date)}`;
+                options = {
+                    year: "numeric",
+                    month: "short",
+                };
+                let shortLabel = new Intl.DateTimeFormat(i18n.language === "ru" ? "ru-RU" : "en-US", options).format(date);
                 return {
                     label,
+                    shortLabel,
                     x: v.x,
                     y: v.y
                 }
@@ -74,13 +80,13 @@ export const Tx = () => {
                     labelComponent={
                         <VictoryTooltip dy={0} centerOffset={{ x: 25 }} />
                     }
-                    data={langAggregateTx.data}
+                    data={langAggregateTx?.data}
                 >
                     <VictoryLine />
                     <VictoryScatter size={2} />
                 </VictoryGroup>
                 <VictoryAxis dependentAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
-                <VictoryAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
+                <VictoryAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => Number.isInteger(x) && x <= langAggregateTx?.data?.length ? langAggregateTx?.data[x]?.shortLabel : null} />
             </VictoryChart>}
         </div>
     </>
