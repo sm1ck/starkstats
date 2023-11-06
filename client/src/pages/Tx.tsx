@@ -1,6 +1,6 @@
 import { Watch } from "react-loader-spinner";
 import { useFetch } from "../hooks/fetchHook";
-import { VictoryAxis, VictoryChart, VictoryGroup, VictoryLabel, VictoryLine, VictoryPie, VictoryScatter, VictoryTooltip, VictoryZoomContainer } from "victory";
+import { VictoryAxis, VictoryChart, VictoryGroup, VictoryLine, VictoryPie, VictoryScatter, VictoryTooltip, VictoryZoomContainer } from "victory";
 import { useTitle } from "../hooks/titleHook";
 import { midColormap, sumPercent } from "../utils/common";
 import { useTranslation } from "react-i18next";
