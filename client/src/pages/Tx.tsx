@@ -1,17 +1,40 @@
 import { Watch } from "react-loader-spinner";
 import { useFetch } from "../hooks/fetchHook";
-import { VictoryPie, VictoryTooltip } from "victory";
+import { VictoryAxis, VictoryChart, VictoryGroup, VictoryLine, VictoryPie, VictoryScatter, VictoryTooltip, VictoryZoomContainer } from "victory";
 import { useTitle } from "../hooks/titleHook";
 import { midColormap, sumPercent } from "../utils/common";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 
 export const Tx = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     let [loaded, fetchData] = useFetch("/api/tx");
+    let [loadedAggregateTx, fetchDataAggregateTx] = useFetch("/api/aggregatetx");
+    let [langAggregateTx, setLangAggregateTx] = useState(null as any);
 
     useTitle(t("title", { page: t("navTx") }));
 
-    return !loaded ? <Watch
+    useEffect(() => {
+        if (fetchDataAggregateTx?.data?.length > 0) {
+            setLangAggregateTx({ data: fetchDataAggregateTx.data.map((v: any) => {
+                let dateSplitted = v.label.split(" ");
+                let date = dateSplitted.length === 3 ? new Date(dateSplitted[0], dateSplitted[1], dateSplitted[2]) : new Date(dateSplitted[0], dateSplitted[1], 1);
+                let options: Intl.DateTimeFormatOptions = {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                };
+                let label = `${v.y}, ${new Intl.DateTimeFormat(i18n.language === "ru" ? "ru-RU" : "en-US", options).format(date)}`;
+                return {
+                    label,
+                    x: v.x,
+                    y: v.y
+                }
+            })});
+        }
+    }, [fetchDataAggregateTx, i18n, setLangAggregateTx, i18n.language]);
+
+    return !loaded || !loadedAggregateTx ? <Watch
         height="80"
         width="80"
         radius="48"
@@ -20,6 +43,7 @@ export const Tx = () => {
         wrapperStyle={{}}
         visible={true}
     /> : fetchData.data === undefined ? <div>{fetchData.error}</div> :
+    <>
         <div className="victoryPie">
             <h3 className="textCenter">{t("txTitle")}</h3>
             <div className="textCenter">{t("chartInstruction")}</div>
@@ -39,4 +63,25 @@ export const Tx = () => {
                 ]}
             />
         </div>
+        <div className="line-break"></div>
+        <div className="victoryChart">
+            <h3 className="textCenter">{t("txAggregateTitle")}</h3>
+            <div className="textCenter">{t("chartInstruction")}</div>
+            <div className="textCenter">{t("chartInstructionZoom")}</div>
+            {langAggregateTx && <VictoryChart domainPadding={20} padding={60} containerComponent={<VictoryZoomContainer />}>
+                <VictoryGroup
+                    style={{ data: { stroke: "#0c0c4f", strokeWidth: 2 }, labels: { fontSize: 9 } }}
+                    labelComponent={
+                        <VictoryTooltip dy={0} centerOffset={{ x: 25 }} />
+                    }
+                    data={langAggregateTx.data}
+                >
+                    <VictoryLine />
+                    <VictoryScatter size={2} />
+                </VictoryGroup>
+                <VictoryAxis dependentAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
+                <VictoryAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
+            </VictoryChart>}
+        </div>
+    </>
 };

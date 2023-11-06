@@ -40,7 +40,7 @@ const compareByMonthAndYear = (
   lastMonth: number,
   currentMonth: number,
   lastYear: number,
-  currentYear: number
+  currentYear: number,
 ) => {
   if (lastMonth != currentMonth || lastYear != currentYear) {
     return true;
@@ -72,7 +72,7 @@ try {
   if (parentPort) {
     // eth price
     let ethPriceQuery = await fetch(
-      "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"
+      "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD",
     );
     let ethPriceJson = await ethPriceQuery.json();
     let ethPrice = +ethPriceJson.USD;
@@ -269,7 +269,7 @@ try {
                 lastDateDays.month,
                 currentDate.month,
                 lastDateDays.year,
-                currentDate.year
+                currentDate.year,
               )
             ) {
               lastTimestampDays = timestamp;
@@ -283,7 +283,7 @@ try {
                 lastDateWeeks.month,
                 currentDate.month,
                 lastDateWeeks.year,
-                currentDate.year
+                currentDate.year,
               )
             ) {
               lastTimestampWeeks = timestamp;
@@ -411,8 +411,8 @@ try {
         },
       },
     });
-    exit(0);
   }
 } catch (e) {
   console.log("[Error] -> ", e);
 }
+exit(0);

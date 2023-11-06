@@ -25,6 +25,14 @@ class Cache {
     status: false,
     error: "Данные еще не загружены..",
   };
+  private cacheAggregateTx: any = {
+    status: false,
+    error: "Данные еще не загружены..",
+  };
+  private cacheAggregateUsers: any = {
+    status: false,
+    error: "Данные еще не загружены..",
+  };
   private cacheEthPrice = 0;
 
   constructor(
@@ -54,6 +62,14 @@ class Cache {
 
   getCacheInternalVolume() {
     return this.cacheInternalVolume;
+  }
+
+  getCacheAggregateTx() {
+    return this.cacheAggregateTx;
+  }
+
+  getCacheAggregateUsers() {
+    return this.cacheAggregateUsers;
   }
 
   getCacheEthPrice() {
@@ -88,32 +104,64 @@ class Cache {
     this.cacheInternalVolume = cache;
   }
 
+  updateCacheAggregateTx(cache: any) {
+    this.cacheAggregateTx = cache;
+  }
+
+  updateCacheAggregateUsers(cache: any) {
+    this.cacheAggregateUsers = cache;
+  }
+
   async startUpdateOnInterval(timeSec: number, cores: number): Promise<void> {
     let startTime = performance.now();
     console.log("[Cache] -> Начали обновлять кеш..");
-    await new Promise((resolve) => {
-      let worker = new Worker(
-        new URL("../services/cacheUpdateWorker.ts", import.meta.url),
-        {
-          workerData: {
-            database: this.database,
-            limit: 0,
-            skip: 0,
-            isCache: true,
+    await Promise.allSettled([
+      new Promise((resolve) => {
+        let worker = new Worker(
+          new URL("../services/cacheUpdateWorker.ts", import.meta.url),
+          {
+            workerData: {
+              database: this.database,
+              limit: 0,
+              skip: 0,
+              isCache: true,
+            },
+            execArgv: ["--loader", "ts-node/esm/transpile-only"],
           },
-          execArgv: ["--loader", "ts-node/esm/transpile-only"],
-        },
-      );
-      worker.on("message", (msg) => {
-        if (msg.hasOwnProperty("totalWallets")) {
-          this.updateCacheTotalWallets(msg.totalWallets);
-        }
-      });
-      worker.on("error", (e) => console.log("[Error] -> ", e));
-      worker.on("exit", async () => {
-        resolve(true);
-      });
-    });
+        );
+        worker.on("message", (msg) => {
+          if (msg.hasOwnProperty("totalWallets")) {
+            this.updateCacheTotalWallets(msg.totalWallets);
+          }
+        });
+        worker.on("error", (e) => console.log("[Error] -> ", e));
+        worker.on("exit", async () => {
+          resolve(true);
+        });
+      }),
+      new Promise((resolve) => {
+        let worker = new Worker(
+          new URL("../services/graphqlUpdateWorker.ts", import.meta.url),
+          {
+            workerData: {
+              parseUrl: this.parseUrl,
+            },
+            execArgv: ["--loader", "ts-node/esm/transpile-only"],
+          },
+        );
+        worker.on("message", (msg) => {
+          if (msg.hasOwnProperty("tx")) {
+            this.updateCacheAggregateTx(msg.tx);
+          } else if (msg.hasOwnProperty("users")) {
+            this.updateCacheAggregateUsers(msg.users);
+          }
+        });
+        worker.on("error", (e) => console.log("[Error] -> ", e));
+        worker.on("exit", async () => {
+          resolve(true);
+        });
+      }),
+    ]);
     let limit = Math.floor(
       this.getCacheTotalWallets().data.totalWalletsFiltered / cores,
     );

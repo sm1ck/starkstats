@@ -79,6 +79,24 @@ app.get("/api/total", async (req, res) => {
   }
 });
 
+app.get("/api/aggregatetx", async (req, res) => {
+  let data = cache.getCacheAggregateTx();
+  if (!data?.data) {
+    res.status(500).json(data);
+  } else {
+    res.json(data);
+  }
+});
+
+app.get("/api/aggregateusers", async (req, res) => {
+  let data = cache.getCacheAggregateUsers();
+  if (!data?.data) {
+    res.status(500).json(data);
+  } else {
+    res.json(data);
+  }
+});
+
 app.post("/api/batchcheck", async (req, res) => {
   let { data } = req.body;
   if (

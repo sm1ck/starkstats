@@ -1,17 +1,40 @@
 import { useFetch } from "../hooks/fetchHook";
-import { VictoryAxis, VictoryChart, VictoryScatter, VictoryTooltip } from "victory";
+import { VictoryAxis, VictoryChart, VictoryGroup, VictoryLine, VictoryScatter, VictoryTooltip, VictoryZoomContainer } from "victory";
 import { Watch } from "react-loader-spinner";
 import { useTitle } from "../hooks/titleHook";
 import { sumPercent } from "../utils/common";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 
 export const Activity = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     let [loaded, fetchData] = useFetch("/api/activity");
+    let [loadedAggregateUsers, fetchDataAggregateUsers] = useFetch("/api/aggregateusers");
+    let [langAggregateUsers, setLangAggregateUsers] = useState(null as any);
 
     useTitle(t("title", { page: t("navActivityShort") }));
 
-    return !loaded ? <Watch
+    useEffect(() => {
+        if (fetchDataAggregateUsers?.data?.length > 0) {
+            setLangAggregateUsers({ data: fetchDataAggregateUsers.data.map((v: any) => {
+                let dateSplitted = v.label.split(" ");
+                let date = dateSplitted.length === 3 ? new Date(dateSplitted[0], dateSplitted[1], dateSplitted[2]) : new Date(dateSplitted[0], dateSplitted[1], 1);
+                let options: Intl.DateTimeFormatOptions = {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                };
+                let label = `${v.y}, ${new Intl.DateTimeFormat(i18n.language === "ru" ? "ru-RU" : "en-US", options).format(date)}`;
+                return {
+                    label,
+                    x: v.x,
+                    y: v.y
+                }
+            })});
+        }
+    }, [fetchDataAggregateUsers, i18n, setLangAggregateUsers, i18n.language]);
+
+    return !loaded || !loadedAggregateUsers ? <Watch
         height="80"
         width="80"
         radius="48"
@@ -93,5 +116,22 @@ export const Activity = () => {
                 <VictoryAxis dependentAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
                 <VictoryAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
             </VictoryChart>
+            <h3 className="textCenter">{t("usersAggregateTitle")}</h3>
+            <div className="textCenter">{t("chartInstruction")}</div>
+            <div className="textCenter">{t("chartInstructionZoom")}</div>
+            {langAggregateUsers && <VictoryChart domainPadding={20} padding={60} containerComponent={<VictoryZoomContainer />}>
+                <VictoryGroup
+                    style={{ data: { stroke: "#0c0c4f", strokeWidth: 2 }, labels: { fontSize: 9 } }}
+                    labelComponent={
+                        <VictoryTooltip dy={0} centerOffset={{ x: 25 }} />
+                    }
+                    data={langAggregateUsers.data}
+                >
+                    <VictoryLine />
+                    <VictoryScatter size={2} />
+                </VictoryGroup>
+                <VictoryAxis dependentAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
+                <VictoryAxis style={{ tickLabels: { fontSize: 9 }, axisLabel: { fontSize: 9 } }} tickFormat={(x) => (`${x}`)} />
+            </VictoryChart>}
         </div>
 };
