@@ -29,3 +29,7 @@ Package with reused functions, classes.
 ### docker-compose
 
 Deployment is done via docker-compose, containers for server and database are used. It is also possible to proxy the server to the network via nginx and use SSL certificates.
+
+### Author
+
+Telegram: @JanSergeev
