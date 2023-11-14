@@ -2,7 +2,7 @@ import express from "express";
 import { getChecksumAddress } from "starknet";
 import path from "path";
 import Cache from "./database/Cache";
-import { utils, parseSingleContract, Database } from "shared";
+import { utils, parseSingleContract, Database, cacheTypes } from "shared";
 
 const app = express();
 const port = 5000;
@@ -27,7 +27,7 @@ app.use(express.urlencoded());
 
 app.get("/api/tx", async (req, res) => {
   let data = cache.getCacheTx();
-  if (!data?.data) {
+  if (cacheTypes.isStatus(data)) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -36,7 +36,7 @@ app.get("/api/tx", async (req, res) => {
 
 app.get("/api/balance", async (req, res) => {
   let data = cache.getCacheBalance();
-  if (!data?.data) {
+  if (cacheTypes.isStatus(data)) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -45,7 +45,7 @@ app.get("/api/balance", async (req, res) => {
 
 app.get("/api/volume", async (req, res) => {
   let data = cache.getCacheVolume();
-  if (!data?.data) {
+  if (cacheTypes.isStatus(data)) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -54,7 +54,7 @@ app.get("/api/volume", async (req, res) => {
 
 app.get("/api/internalvolume", async (req, res) => {
   let data = cache.getCacheInternalVolume();
-  if (!data?.data) {
+  if (cacheTypes.isStatus(data)) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -63,7 +63,7 @@ app.get("/api/internalvolume", async (req, res) => {
 
 app.get("/api/activity", async (req, res) => {
   let data = cache.getCacheActivity();
-  if (data?.data) {
+  if (cacheTypes.isStatus(data)) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -72,7 +72,7 @@ app.get("/api/activity", async (req, res) => {
 
 app.get("/api/total", async (req, res) => {
   let data = cache.getCacheTotalWallets();
-  if (!data?.data) {
+  if (cacheTypes.isStatus(data)) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -81,7 +81,7 @@ app.get("/api/total", async (req, res) => {
 
 app.get("/api/aggregatetx", async (req, res) => {
   let data = cache.getCacheAggregateTx();
-  if (!data?.data) {
+  if (cacheTypes.isStatus(data)) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -90,7 +90,7 @@ app.get("/api/aggregatetx", async (req, res) => {
 
 app.get("/api/aggregatetps", async (req, res) => {
   let data = cache.getCacheAggregateTps();
-  if (!data?.data) {
+  if (cacheTypes.isStatus(data)) {
     res.status(500).json(data);
   } else {
     res.json(data);
@@ -99,7 +99,7 @@ app.get("/api/aggregatetps", async (req, res) => {
 
 app.get("/api/aggregateusers", async (req, res) => {
   let data = cache.getCacheAggregateUsers();
-  if (!data?.data) {
+  if (cacheTypes.isStatus(data)) {
     res.status(500).json(data);
   } else {
     res.json(data);

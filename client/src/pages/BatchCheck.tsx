@@ -1,9 +1,9 @@
 import { Watch } from "react-loader-spinner";
+import { useTranslation } from "react-i18next";
 import useForm from "../hooks/useForm";
 import useTitle from "../hooks/useTitle";
 import { useId } from "react";
 import { CSVLink } from "react-csv";
-import { useTranslation } from "react-i18next";
 import { replaceRuEngDates } from "../utils/common";
 
 const BatchCheck = () => {

@@ -8,6 +8,7 @@ import * as jsonaddress from "./json/JSONAddress";
 import * as jsondata from "./json/JSONData";
 import * as jsoncontracts from "./json/JSONContracts";
 import * as jsonerror from "./json/JSONError";
+import * as cacheTypes from "./types/cache";
 
 export {
   Database,
@@ -21,4 +22,5 @@ export {
   jsonerror,
   jsondata,
   jsoncontracts,
+  cacheTypes,
 };

@@ -1,39 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Worker } from "worker_threads";
 import { DateTime } from "luxon";
-import { Database, utils } from "shared";
+import { Database, utils, cacheTypes } from "shared";
 
 class Cache {
-  private cacheBalance: any = {
+  private cacheBalance: cacheTypes.Status | cacheTypes.Balance = {
     status: false,
     error: "Данные еще не загружены..",
   };
-  private cacheTx: any = { status: false, error: "Данные еще не загружены.." };
-  private cacheActivity: any = {
+  private cacheTx: cacheTypes.Status | cacheTypes.Tx = {
     status: false,
     error: "Данные еще не загружены..",
   };
-  private cacheTotalWallets: any = {
+  private cacheActivity: cacheTypes.Status | cacheTypes.Activity = {
     status: false,
     error: "Данные еще не загружены..",
   };
-  private cacheVolume: any = {
+  private cacheTotalWallets: cacheTypes.Status | cacheTypes.TotalWallets = {
     status: false,
     error: "Данные еще не загружены..",
   };
-  private cacheInternalVolume: any = {
+  private cacheVolume: cacheTypes.Status | cacheTypes.Volume = {
     status: false,
     error: "Данные еще не загружены..",
   };
-  private cacheAggregateTx: any = {
+  private cacheInternalVolume: cacheTypes.Status | cacheTypes.InternalVolume = {
     status: false,
     error: "Данные еще не загружены..",
   };
-  private cacheAggregateTps: any = {
+  private cacheAggregateTx: cacheTypes.Status | cacheTypes.AggregateData = {
     status: false,
     error: "Данные еще не загружены..",
   };
-  private cacheAggregateUsers: any = {
+  private cacheAggregateTps: cacheTypes.Status | cacheTypes.AggregateData = {
+    status: false,
+    error: "Данные еще не загружены..",
+  };
+  private cacheAggregateUsers: cacheTypes.Status | cacheTypes.AggregateData = {
     status: false,
     error: "Данные еще не загружены..",
   };
@@ -88,39 +91,39 @@ class Cache {
     this.cacheEthPrice = cache;
   }
 
-  updateCacheBalance(cache: any) {
+  updateCacheBalance(cache: cacheTypes.Balance) {
     this.cacheBalance = cache;
   }
 
-  updateCacheTx(cache: any) {
+  updateCacheTx(cache: cacheTypes.Tx) {
     this.cacheTx = cache;
   }
 
-  updateCacheActivity(cache: any) {
+  updateCacheActivity(cache: cacheTypes.Activity) {
     this.cacheActivity = cache;
   }
 
-  updateCacheTotalWallets(cache: any) {
+  updateCacheTotalWallets(cache: cacheTypes.TotalWallets) {
     this.cacheTotalWallets = cache;
   }
 
-  updateCacheVolume(cache: any) {
+  updateCacheVolume(cache: cacheTypes.Volume) {
     this.cacheVolume = cache;
   }
 
-  updateCacheInternalVolume(cache: any) {
+  updateCacheInternalVolume(cache: cacheTypes.InternalVolume) {
     this.cacheInternalVolume = cache;
   }
 
-  updateCacheAggregateTx(cache: any) {
+  updateCacheAggregateTx(cache: cacheTypes.AggregateData) {
     this.cacheAggregateTx = cache;
   }
 
-  updateCacheAggregateTps(cache: any) {
+  updateCacheAggregateTps(cache: cacheTypes.AggregateData) {
     this.cacheAggregateTps = cache;
   }
 
-  updateCacheAggregateUsers(cache: any) {
+  updateCacheAggregateUsers(cache: cacheTypes.AggregateData) {
     this.cacheAggregateUsers = cache;
   }
 
@@ -150,8 +153,11 @@ class Cache {
         resolve(true);
       });
     });
+    let totalWallets = this.getCacheTotalWallets();
     let limit = Math.floor(
-      this.getCacheTotalWallets().data.totalWalletsFiltered / cores,
+      cacheTypes.isTotalWallets(totalWallets)
+        ? totalWallets.data.totalWalletsFiltered / cores
+        : 1,
     );
     let skip = 0;
     let promises = [];

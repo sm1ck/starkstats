@@ -1,7 +1,7 @@
 import { Watch } from "react-loader-spinner";
+import { useTranslation } from "react-i18next";
 import useFetch from "../hooks/useFetch";
 import useTitle from "../hooks/useTitle";
-import { useTranslation } from "react-i18next";
 
 const Index: () => JSX.Element = () => {
   const { t } = useTranslation();

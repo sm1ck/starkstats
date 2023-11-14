@@ -1,19 +1,11 @@
 import { Watch } from "react-loader-spinner";
-import useFetch from "../hooks/useFetch";
-import {
-  VictoryAxis,
-  VictoryChart,
-  VictoryGroup,
-  VictoryLine,
-  VictoryPie,
-  VictoryScatter,
-  VictoryTooltip,
-  VictoryZoomContainer,
-} from "victory";
-import useTitle from "../hooks/useTitle";
-import { midColormap, sumPercent } from "../utils/common";
 import { useTranslation } from "react-i18next";
+import useFetch from "../hooks/useFetch";
+import useTitle from "../hooks/useTitle";
 import useLangFetch from "../hooks/useLangFetch";
+import Pie from "../components/Pie";
+import LineChart from "../components/LineChart";
+import { midColormap, sumPercent } from "../utils/common";
 
 const Tx = () => {
   const { t } = useTranslation();
@@ -40,152 +32,64 @@ const Tx = () => {
     <div>{fetchData.error}</div>
   ) : (
     <>
-      <div className="victoryPie">
-        <h3 className="textCenter">{t("txTitle")}</h3>
-        <div className="textCenter">{t("chartInstruction")}</div>
-        <VictoryPie
-          colorScale={midColormap}
-          style={{ labels: { fontSize: 12 } }}
-          padding={{ top: 40, bottom: 40 }}
-          labelComponent={<VictoryTooltip dy={0} centerOffset={{ x: 25 }} />}
-          data={[
-            {
-              label: `${t("fromTo", { start: 1, end: 5 })} (${
-                fetchData.data.users_by_tx[1]
-              }, ${sumPercent(fetchData.data.users_by_tx, 1)}%)`,
-              x: fetchData.data.users_by_tx[1],
-              y: fetchData.data.users_by_tx[1],
-            },
-            {
-              label: `${t("fromTo", { start: 6, end: 9 })} (${
-                fetchData.data.users_by_tx[5]
-              }, ${sumPercent(fetchData.data.users_by_tx, 5)}%)`,
-              x: fetchData.data.users_by_tx[5],
-              y: fetchData.data.users_by_tx[5],
-            },
-            {
-              label: `${t("fromTo", { start: 10, end: 19 })} (${
-                fetchData.data.users_by_tx[10]
-              }, ${sumPercent(fetchData.data.users_by_tx, 10)}%)`,
-              x: fetchData.data.users_by_tx[10],
-              y: fetchData.data.users_by_tx[10],
-            },
-            {
-              label: `${t("fromTo", { start: 20, end: 29 })} (${
-                fetchData.data.users_by_tx[20]
-              }, ${sumPercent(fetchData.data.users_by_tx, 20)}%)`,
-              x: fetchData.data.users_by_tx[20],
-              y: fetchData.data.users_by_tx[20],
-            },
-            {
-              label: `${t("fromTo", { start: 30, end: 49 })} (${
-                fetchData.data.users_by_tx[30]
-              }, ${sumPercent(fetchData.data.users_by_tx, 30)}%)`,
-              x: fetchData.data.users_by_tx[30],
-              y: fetchData.data.users_by_tx[30],
-            },
-            {
-              label: `50 ${t("more")} (${
-                fetchData.data.users_by_tx[50]
-              }, ${sumPercent(fetchData.data.users_by_tx, 50)}%)`,
-              x: fetchData.data.users_by_tx[50],
-              y: fetchData.data.users_by_tx[50],
-            },
-          ]}
-        />
-      </div>
+      <Pie
+        colorScale={midColormap}
+        titleTranslate={"txTitle"}
+        data={[
+          {
+            label: `${t("fromTo", { start: 1, end: 5 })} (${
+              fetchData.data.users_by_tx[1]
+            }, ${sumPercent(fetchData.data.users_by_tx, 1)}%)`,
+            x: fetchData.data.users_by_tx[1],
+            y: fetchData.data.users_by_tx[1],
+          },
+          {
+            label: `${t("fromTo", { start: 6, end: 9 })} (${
+              fetchData.data.users_by_tx[5]
+            }, ${sumPercent(fetchData.data.users_by_tx, 5)}%)`,
+            x: fetchData.data.users_by_tx[5],
+            y: fetchData.data.users_by_tx[5],
+          },
+          {
+            label: `${t("fromTo", { start: 10, end: 19 })} (${
+              fetchData.data.users_by_tx[10]
+            }, ${sumPercent(fetchData.data.users_by_tx, 10)}%)`,
+            x: fetchData.data.users_by_tx[10],
+            y: fetchData.data.users_by_tx[10],
+          },
+          {
+            label: `${t("fromTo", { start: 20, end: 29 })} (${
+              fetchData.data.users_by_tx[20]
+            }, ${sumPercent(fetchData.data.users_by_tx, 20)}%)`,
+            x: fetchData.data.users_by_tx[20],
+            y: fetchData.data.users_by_tx[20],
+          },
+          {
+            label: `${t("fromTo", { start: 30, end: 49 })} (${
+              fetchData.data.users_by_tx[30]
+            }, ${sumPercent(fetchData.data.users_by_tx, 30)}%)`,
+            x: fetchData.data.users_by_tx[30],
+            y: fetchData.data.users_by_tx[30],
+          },
+          {
+            label: `50 ${t("more")} (${
+              fetchData.data.users_by_tx[50]
+            }, ${sumPercent(fetchData.data.users_by_tx, 50)}%)`,
+            x: fetchData.data.users_by_tx[50],
+            y: fetchData.data.users_by_tx[50],
+          },
+        ]}
+      />
       <div className="line-break"></div>
-      <div className="victoryChart">
-        <h3 className="textCenter">{t("txAggregateTitle")}</h3>
-        <div className="textCenter">{t("chartInstruction")}</div>
-        <div className="textCenter">{t("chartInstructionZoom")}</div>
-        {langAggregateTx && (
-          <VictoryChart
-            domainPadding={20}
-            padding={{ left: 60, right: 60, top: 40, bottom: 40 }}
-            containerComponent={<VictoryZoomContainer />}
-          >
-            <VictoryGroup
-              style={{
-                data: { fill: "#0c0c4f", stroke: "#0c0c4f", strokeWidth: 2 },
-                labels: { fontSize: 9 },
-              }}
-              labelComponent={
-                <VictoryTooltip dy={0} centerOffset={{ x: 25 }} />
-              }
-              data={langAggregateTx?.data}
-            >
-              <VictoryLine interpolation={"natural"} />
-              <VictoryScatter size={2} />
-            </VictoryGroup>
-            <VictoryAxis
-              dependentAxis
-              style={{
-                tickLabels: { fontSize: 9 },
-                axisLabel: { fontSize: 9 },
-              }}
-              tickFormat={(x) => `${x}`}
-            />
-            <VictoryAxis
-              style={{
-                tickLabels: { fontSize: 9 },
-                axisLabel: { fontSize: 9 },
-              }}
-              tickFormat={(x) =>
-                Number.isInteger(x) && x <= langAggregateTx?.data?.length
-                  ? langAggregateTx?.data[x]?.shortLabel
-                  : null
-              }
-            />
-          </VictoryChart>
-        )}
-      </div>
+      <LineChart
+        titleTranslate={"txAggregateTitle"}
+        data={langAggregateTx?.data}
+      />
       <div className="line-break"></div>
-      <div className="victoryChart">
-        <h3 className="textCenter">{t("tpsAggregateTitle")}</h3>
-        <div className="textCenter">{t("chartInstruction")}</div>
-        <div className="textCenter">{t("chartInstructionZoom")}</div>
-        {langAggregateTps && (
-          <VictoryChart
-            domainPadding={20}
-            padding={{ left: 60, right: 60, top: 40, bottom: 40 }}
-            containerComponent={<VictoryZoomContainer />}
-          >
-            <VictoryGroup
-              style={{
-                data: { fill: "#0c0c4f", stroke: "#0c0c4f", strokeWidth: 2 },
-                labels: { fontSize: 9 },
-              }}
-              labelComponent={
-                <VictoryTooltip dy={0} centerOffset={{ x: 25 }} />
-              }
-              data={langAggregateTps?.data}
-            >
-              <VictoryLine interpolation={"natural"} />
-              <VictoryScatter size={2} />
-            </VictoryGroup>
-            <VictoryAxis
-              dependentAxis
-              style={{
-                tickLabels: { fontSize: 9 },
-                axisLabel: { fontSize: 9 },
-              }}
-              tickFormat={(x) => `${x}`}
-            />
-            <VictoryAxis
-              style={{
-                tickLabels: { fontSize: 9 },
-                axisLabel: { fontSize: 9 },
-              }}
-              tickFormat={(x) =>
-                Number.isInteger(x) && x <= langAggregateTps?.data?.length
-                  ? langAggregateTps?.data[x]?.shortLabel
-                  : null
-              }
-            />
-          </VictoryChart>
-        )}
-      </div>
+      <LineChart
+        titleTranslate={"tpsAggregateTitle"}
+        data={langAggregateTps?.data}
+      />
     </>
   );
 };

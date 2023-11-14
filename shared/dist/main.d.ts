@@ -8,4 +8,5 @@ import * as jsonaddress from "./json/JSONAddress";
 import * as jsondata from "./json/JSONData";
 import * as jsoncontracts from "./json/JSONContracts";
 import * as jsonerror from "./json/JSONError";
-export { Database, Contract, IContract, parseSingleContract, parseContractCallData, utils, definedConst, jsonaddress, jsonerror, jsondata, jsoncontracts, };
+import * as cacheTypes from "./types/cache";
+export { Database, Contract, IContract, parseSingleContract, parseContractCallData, utils, definedConst, jsonaddress, jsonerror, jsondata, jsoncontracts, cacheTypes, };
