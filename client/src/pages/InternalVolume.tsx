@@ -32,6 +32,7 @@ const InternalVolume = () => {
         <VictoryPie
           colorScale={largeColorMap}
           style={{ labels: { fontSize: 12 } }}
+          padding={{ top: 40, bottom: 40 }}
           labelComponent={<VictoryTooltip dy={0} centerOffset={{ x: 25 }} />}
           data={[
             {

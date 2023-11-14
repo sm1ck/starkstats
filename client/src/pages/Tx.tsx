@@ -46,6 +46,7 @@ const Tx = () => {
         <VictoryPie
           colorScale={midColormap}
           style={{ labels: { fontSize: 12 } }}
+          padding={{ top: 40, bottom: 40 }}
           labelComponent={<VictoryTooltip dy={0} centerOffset={{ x: 25 }} />}
           data={[
             {
@@ -101,7 +102,7 @@ const Tx = () => {
         {langAggregateTx && (
           <VictoryChart
             domainPadding={20}
-            padding={40}
+            padding={{ left: 60, right: 60, top: 40, bottom: 40 }}
             containerComponent={<VictoryZoomContainer />}
           >
             <VictoryGroup
@@ -147,7 +148,7 @@ const Tx = () => {
         {langAggregateTps && (
           <VictoryChart
             domainPadding={20}
-            padding={40}
+            padding={{ left: 60, right: 60, top: 40, bottom: 40 }}
             containerComponent={<VictoryZoomContainer />}
           >
             <VictoryGroup

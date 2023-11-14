@@ -39,7 +39,10 @@ const Activity = () => {
     <div className="victoryChart">
       <h3 className="textCenter">{t("txActivityDay")}</h3>
       <div className="textCenter">{t("chartInstruction")}</div>
-      <VictoryChart domainPadding={20} padding={40}>
+      <VictoryChart
+        domainPadding={20}
+        padding={{ left: 60, right: 60, top: 40, bottom: 40 }}
+      >
         <VictoryScatter
           style={{
             data: { fill: "#c43a31", stroke: "black", strokeWidth: 1 },
@@ -127,7 +130,10 @@ const Activity = () => {
       </VictoryChart>
       <h3 className="textCenter">{t("txActivityWeek")}</h3>
       <div className="textCenter">{t("chartInstruction")}</div>
-      <VictoryChart domainPadding={20} padding={40}>
+      <VictoryChart
+        domainPadding={20}
+        padding={{ left: 60, right: 60, top: 40, bottom: 40 }}
+      >
         <VictoryScatter
           style={{
             data: { fill: "#c43a31", stroke: "black", strokeWidth: 1 },
@@ -194,7 +200,10 @@ const Activity = () => {
       </VictoryChart>
       <h3 className="textCenter">{t("txActivityMonth")}</h3>
       <div className="textCenter">{t("chartInstruction")}</div>
-      <VictoryChart domainPadding={20} padding={40}>
+      <VictoryChart
+        domainPadding={20}
+        padding={{ left: 60, right: 60, top: 40, bottom: 40 }}
+      >
         <VictoryScatter
           style={{
             data: { fill: "#c43a31", stroke: "black", strokeWidth: 1 },
@@ -265,7 +274,7 @@ const Activity = () => {
       {langAggregateUsers && (
         <VictoryChart
           domainPadding={20}
-          padding={40}
+          padding={{ left: 60, right: 60, top: 40, bottom: 40 }}
           containerComponent={<VictoryZoomContainer />}
         >
           <VictoryGroup
