@@ -22,7 +22,7 @@
         "tslib": "^2.5.3"
     },
     "dependencies": {
-        "mongoose": "^7.3.2",
+        "mongoose": "^7.3.3",
         "node-fetch": "^3.3.1",
         "shared": "file:../shared",
         "starknet": "^5.14.1"

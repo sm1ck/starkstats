@@ -3,7 +3,7 @@ import { Data } from "react-csv/components/CommonPropTypes";
 import { useTranslation } from "react-i18next";
 import { replaceRuEngDates } from "../utils/common";
 
-export const useForm = () => {
+const useForm = () => {
   const ref = useRef<HTMLTextAreaElement>(null);
   const refScroll = useRef(null as any);
   const refCheckBox = useRef(null as any);
@@ -54,3 +54,5 @@ export const useForm = () => {
 
   return { sendForm, ref, refScroll, result, resultCsv, refCheckBox };
 };
+
+export default useForm;

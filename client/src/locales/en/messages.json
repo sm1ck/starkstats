@@ -47,6 +47,7 @@
     "txActivityWeek": "Statistics of unique calendar weeks by user activity",
     "txTitle": "Statistics of users transaction counts",
     "txAggregateTitle": "Statistics of grow transaction counts by months",
+    "tpsAggregateTitle": "Statistics of average Transactions Per Second (TPS) last 30 days",
     "transactions": "Transactions",
     "volumeTitle": "Statistics of ETH volume through StarkGate / Orbiter / LayerSwap Bridges",
     "volumeTitle2": "Statistics of ETH volume through Bridges and OKX",

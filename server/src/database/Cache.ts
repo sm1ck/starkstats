@@ -29,6 +29,10 @@ class Cache {
     status: false,
     error: "Данные еще не загружены..",
   };
+  private cacheAggregateTps: any = {
+    status: false,
+    error: "Данные еще не загружены..",
+  };
   private cacheAggregateUsers: any = {
     status: false,
     error: "Данные еще не загружены..",
@@ -66,6 +70,10 @@ class Cache {
 
   getCacheAggregateTx() {
     return this.cacheAggregateTx;
+  }
+
+  getCacheAggregateTps() {
+    return this.cacheAggregateTps;
   }
 
   getCacheAggregateUsers() {
@@ -108,6 +116,10 @@ class Cache {
     this.cacheAggregateTx = cache;
   }
 
+  updateCacheAggregateTps(cache: any) {
+    this.cacheAggregateTps = cache;
+  }
+
   updateCacheAggregateUsers(cache: any) {
     this.cacheAggregateUsers = cache;
   }
@@ -115,53 +127,29 @@ class Cache {
   async startUpdateOnInterval(timeSec: number, cores: number): Promise<void> {
     let startTime = performance.now();
     console.log("[Cache] -> Начали обновлять кеш..");
-    await Promise.allSettled([
-      new Promise((resolve) => {
-        let worker = new Worker(
-          new URL("../services/cacheUpdateWorker.ts", import.meta.url),
-          {
-            workerData: {
-              database: this.database,
-              limit: 0,
-              skip: 0,
-              isCache: true,
-            },
-            execArgv: ["--loader", "ts-node/esm/transpile-only"],
+    await new Promise((resolve) => {
+      let worker = new Worker(
+        new URL("../services/cacheUpdateWorker.ts", import.meta.url),
+        {
+          workerData: {
+            database: this.database,
+            limit: 0,
+            skip: 0,
+            isCache: true,
           },
-        );
-        worker.on("message", (msg) => {
-          if (msg.hasOwnProperty("totalWallets")) {
-            this.updateCacheTotalWallets(msg.totalWallets);
-          }
-        });
-        worker.on("error", (e) => console.log("[Error] -> ", e));
-        worker.on("exit", async () => {
-          resolve(true);
-        });
-      }),
-      new Promise((resolve) => {
-        let worker = new Worker(
-          new URL("../services/graphqlUpdateWorker.ts", import.meta.url),
-          {
-            workerData: {
-              parseUrl: this.parseUrl,
-            },
-            execArgv: ["--loader", "ts-node/esm/transpile-only"],
-          },
-        );
-        worker.on("message", (msg) => {
-          if (msg.hasOwnProperty("tx")) {
-            this.updateCacheAggregateTx(msg.tx);
-          } else if (msg.hasOwnProperty("users")) {
-            this.updateCacheAggregateUsers(msg.users);
-          }
-        });
-        worker.on("error", (e) => console.log("[Error] -> ", e));
-        worker.on("exit", async () => {
-          resolve(true);
-        });
-      }),
-    ]);
+          execArgv: ["--loader", "ts-node/esm/transpile-only"],
+        },
+      );
+      worker.on("message", (msg) => {
+        if (msg.hasOwnProperty("totalWallets")) {
+          this.updateCacheTotalWallets(msg.totalWallets);
+        }
+      });
+      worker.on("error", (e) => console.log("[Error] -> ", e));
+      worker.on("exit", async () => {
+        resolve(true);
+      });
+    });
     let limit = Math.floor(
       this.getCacheTotalWallets().data.totalWalletsFiltered / cores,
     );
@@ -316,6 +304,32 @@ class Cache {
       );
       skip += limit;
     }
+    promises.push(
+      new Promise((resolve) => {
+        let worker = new Worker(
+          new URL("../services/graphqlUpdateWorker.ts", import.meta.url),
+          {
+            workerData: {
+              parseUrl: this.parseUrl,
+            },
+            execArgv: ["--loader", "ts-node/esm/transpile-only"],
+          },
+        );
+        worker.on("message", (msg) => {
+          if (msg.hasOwnProperty("tx")) {
+            this.updateCacheAggregateTx(msg.tx);
+          } else if (msg.hasOwnProperty("tps")) {
+            this.updateCacheAggregateTps(msg.tps);
+          } else if (msg.hasOwnProperty("users")) {
+            this.updateCacheAggregateUsers(msg.users);
+          }
+        });
+        worker.on("error", (e) => console.log("[Error] -> ", e));
+        worker.on("exit", async () => {
+          resolve(true);
+        });
+      }),
+    );
     await Promise.allSettled(promises);
     this.updateCacheVolume(volume);
     this.updateCacheInternalVolume(internalVolume);

@@ -88,6 +88,15 @@ app.get("/api/aggregatetx", async (req, res) => {
   }
 });
 
+app.get("/api/aggregatetps", async (req, res) => {
+  let data = cache.getCacheAggregateTps();
+  if (!data?.data) {
+    res.status(500).json(data);
+  } else {
+    res.json(data);
+  }
+});
+
 app.get("/api/aggregateusers", async (req, res) => {
   let data = cache.getCacheAggregateUsers();
   if (!data?.data) {

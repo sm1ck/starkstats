@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import fetch from "node-fetch";
 
-export const useFetch = (url: string) => {
-  let [loaded, setLoaded] = useState(false);
-  let [fetchData, setFetchData] = useState({} as any);
+const useFetch = (url: string) => {
+  const [loaded, setLoaded] = useState(false);
+  const [fetchData, setFetchData] = useState({} as any);
+
   useEffect(() => {
     fetch(url)
       .then((r) => r.json())
@@ -13,5 +14,8 @@ export const useFetch = (url: string) => {
       })
       .catch((e) => console.log(e));
   }, [url]);
+
   return [loaded, fetchData];
 };
+
+export default useFetch;

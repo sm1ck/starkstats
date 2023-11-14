@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
-import { Layout } from './components/Layout';
-import { Index } from "./pages/Index";
-import { Balance } from './pages/Balance';
-import { Tx } from "./pages/Tx";
-import { Activity } from "./pages/Activity";
-import { BatchCheck } from './pages/BatchCheck';
-import { Volume } from './pages/Volume';
-import { InternalVolume } from './pages/InternalVolume';
+import Layout from './components/Layout';
+import Index from "./pages/Index";
+import Balance from './pages/Balance';
+import Tx from "./pages/Tx";
+import Activity from "./pages/Activity";
+import BatchCheck from './pages/BatchCheck';
+import Volume from './pages/Volume';
+import InternalVolume from './pages/InternalVolume';
 import './i18n';
 
 function App() {

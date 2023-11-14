@@ -106,6 +106,56 @@ try {
     parentPort.postMessage({ tx: sendData });
   }
 
+  let sendDataTps: SendData = {
+    data: [],
+  };
+  startBlockchainDate = new Date(Date.now() - 2592000000); // 30 days ago
+  (x = 0), (y = 0);
+  while (startBlockchainDate.getTime() <= Date.now()) {
+    let nextBlockchainDate = new Date(startBlockchainDate);
+    nextBlockchainDate.setDate(nextBlockchainDate.getDate() + 1);
+    let timestampzGte = startBlockchainDate.toISOString();
+    let timestampzLt = nextBlockchainDate.toISOString();
+    let year = nextBlockchainDate.getUTCFullYear();
+    let month = nextBlockchainDate.getUTCMonth();
+    let day = nextBlockchainDate.getUTCDate();
+
+    let parse = await fetch(parseUrl, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        query: `query MyQuery { deploy_account_aggregate(where: {_and: [{time: {_gte: "${timestampzGte}"}}, {time: {_lt: "${timestampzLt}"}}]}) { aggregate { count(columns: id) } } deploy_aggregate(where: {_and: [{time: {_gte: "${timestampzGte}"}}, {time: {_lt: "${timestampzLt}"}}]}) { aggregate { count(columns: id) } } declare_aggregate(where: {_and: [{time: {_gte: "${timestampzGte}"}}, {time: {_lt: "${timestampzLt}"}}]}) { aggregate { count(columns: id) } } invoke_aggregate(where: {_and: [{time: {_gte: "${timestampzGte}"}}, {time: {_lt: "${timestampzLt}"}}]}) { aggregate { count(columns: id) } } l1_handler_aggregate(where: {_and: [{time: {_gte: "${timestampzGte}"}}, {time: {_lt: "${timestampzLt}"}}]}) { aggregate { count(columns: id) } } }`,
+      }),
+    });
+    let json = (await parse.json()) as JSONAggregateTx;
+    if (!isJSONAggregateTx(json)) {
+      console.log(
+        `[Error] -> JSON не является аггрегированной статистикой по транзакциям (gte: ${timestampzGte}, lt: ${timestampzLt}):`,
+      );
+      console.dir(json);
+      exit(0);
+    }
+    y = +(
+      (json.data.declare_aggregate.aggregate.count +
+        json.data.deploy_account_aggregate.aggregate.count +
+        json.data.deploy_aggregate.aggregate.count +
+        json.data.invoke_aggregate.aggregate.count +
+        json.data.l1_handler_aggregate.aggregate.count) /
+      86400
+    ).toFixed(2);
+    sendDataTps.data.push({ label: `${year} ${month} ${day}`, x, y });
+
+    startBlockchainDate = nextBlockchainDate;
+    x++;
+  }
+  sendDataTps.data.pop();
+  if (parentPort) {
+    parentPort.postMessage({ tps: sendDataTps });
+  }
+
   let sendDataUsers: SendData = {
     data: [],
   };
