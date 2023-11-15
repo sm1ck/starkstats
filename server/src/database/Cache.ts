@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Worker } from "worker_threads";
 import { DateTime } from "luxon";
 import { Database, utils, cacheTypes } from "shared";
@@ -144,7 +143,7 @@ class Cache {
         },
       );
       worker.on("message", (msg) => {
-        if (msg.hasOwnProperty("totalWallets")) {
+        if (msg?.totalWallets) {
           this.updateCacheTotalWallets(msg.totalWallets);
         }
       });
@@ -261,44 +260,72 @@ class Cache {
             },
           );
           worker.on("message", (msg) => {
-            if (msg.hasOwnProperty("volume")) {
-              volume.data.bridgesVolume = utils.deepMergeSum(
+            if (msg?.volume) {
+              let tmpBridgesVolume = utils.deepMergeSum(
                 msg.volume.data.bridgesVolume,
                 volume.data.bridgesVolume,
-              ) as any;
-              volume.data.bridgesWithCexVolume = utils.deepMergeSum(
+              );
+              let tmpBridgesWithCexVolume = utils.deepMergeSum(
                 msg.volume.data.bridgesWithCexVolume,
                 volume.data.bridgesWithCexVolume,
-              ) as any;
-            } else if (msg.hasOwnProperty("internalVolume")) {
-              internalVolume.data = utils.deepMergeSum(
+              );
+              if (cacheTypes.isVolumeDataFields(tmpBridgesVolume)) {
+                volume.data.bridgesVolume = tmpBridgesVolume;
+              }
+              if (cacheTypes.isVolumeDataFields(tmpBridgesWithCexVolume)) {
+                volume.data.bridgesWithCexVolume = tmpBridgesWithCexVolume;
+              }
+            } else if (msg?.internalVolume) {
+              let tmpInternalVolume = utils.deepMergeSum(
                 msg.internalVolume.data,
                 internalVolume.data,
-              ) as any;
-            } else if (msg.hasOwnProperty("tx")) {
-              tx.data.users_by_tx = utils.deepMergeSum(
+              );
+              if (cacheTypes.isInternalVolumeData(tmpInternalVolume)) {
+                internalVolume.data = tmpInternalVolume;
+              }
+            } else if (msg?.tx) {
+              let tmpTx = utils.deepMergeSum(
                 msg.tx.data.users_by_tx,
                 tx.data.users_by_tx,
-              ) as any;
-            } else if (msg.hasOwnProperty("balance")) {
-              balance.data = utils.deepMergeSum(
+              );
+              if (cacheTypes.isTxDataFields(tmpTx)) {
+                tx.data.users_by_tx = tmpTx;
+              }
+            } else if (msg?.balance) {
+              let tmpBalance = utils.deepMergeSum(
                 msg.balance.data,
                 balance.data,
-              ) as any;
-            } else if (msg.hasOwnProperty("activity")) {
-              activity.data.users_by_days = utils.deepMergeSum(
+              );
+              if (cacheTypes.isBalanceData(tmpBalance)) {
+                balance.data = tmpBalance;
+              }
+            } else if (msg?.activity) {
+              let tmpActivityByDays = utils.deepMergeSum(
                 msg.activity.data.users_by_days,
                 activity.data.users_by_days,
-              ) as any;
-              activity.data.users_by_weeks = utils.deepMergeSum(
+              );
+              let tmpActivityByWeeks = utils.deepMergeSum(
                 msg.activity.data.users_by_weeks,
                 activity.data.users_by_weeks,
-              ) as any;
-              activity.data.users_by_months = utils.deepMergeSum(
+              );
+              let tmpActivityByMonths = utils.deepMergeSum(
                 msg.activity.data.users_by_months,
                 activity.data.users_by_months,
-              ) as any;
-            } else if (msg.hasOwnProperty("ethPrice")) {
+              );
+              if (cacheTypes.isActivityDataDaysFields(tmpActivityByDays)) {
+                activity.data.users_by_days = tmpActivityByDays;
+              }
+              if (
+                cacheTypes.isActivityDataWeeksMonthsFields(tmpActivityByWeeks)
+              ) {
+                activity.data.users_by_weeks = tmpActivityByWeeks;
+              }
+              if (
+                cacheTypes.isActivityDataWeeksMonthsFields(tmpActivityByMonths)
+              ) {
+                activity.data.users_by_months = tmpActivityByMonths;
+              }
+            } else if (msg?.ethPrice) {
               this.updateCacheEthPrice(+msg.ethPrice);
             }
           });
@@ -322,11 +349,11 @@ class Cache {
           },
         );
         worker.on("message", (msg) => {
-          if (msg.hasOwnProperty("tx")) {
+          if (msg?.tx) {
             this.updateCacheAggregateTx(msg.tx);
-          } else if (msg.hasOwnProperty("tps")) {
+          } else if (msg?.tps) {
             this.updateCacheAggregateTps(msg.tps);
-          } else if (msg.hasOwnProperty("users")) {
+          } else if (msg?.users) {
             this.updateCacheAggregateUsers(msg.users);
           }
         });

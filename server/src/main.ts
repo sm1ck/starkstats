@@ -5,7 +5,7 @@ import Cache from "./database/Cache";
 import { utils, parseSingleContract, Database, cacheTypes } from "shared";
 
 const app = express();
-const port = 5000;
+const port = typeof process.env.PORT === "number" ? process.env.PORT : 5000;
 const is30mNewInsert =
   process.env.NEW_INSERT_CONTRACTS === "true" ? true : false;
 const graphlUrl = process.env.GRAPHQL_URL || "";
