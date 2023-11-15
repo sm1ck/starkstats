@@ -3,7 +3,11 @@ import { useTranslation } from "react-i18next";
 import useFetch from "../hooks/useFetch";
 import useTitle from "../hooks/useTitle";
 import Pie from "../components/Pie";
-import { largeColorMap, sumPercentWithTotal } from "../utils/common";
+import {
+  largeColorMap,
+  sumPercentAllEntries,
+  sumPercentWithTotal,
+} from "../utils/common";
 
 const InternalVolume = () => {
   const { t } = useTranslation();
@@ -33,13 +37,7 @@ const InternalVolume = () => {
             fetchData.data.internal50
           }, ${sumPercentWithTotal(
             fetchData.data.internal50,
-            fetchData.data.internal50 +
-              fetchData.data.internal500 +
-              fetchData.data.internal1000 +
-              fetchData.data.internal5000 +
-              fetchData.data.internal10000 +
-              fetchData.data.internal50000 +
-              fetchData.data.internalMore
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal50,
           y: fetchData.data.internal50,
@@ -49,13 +47,7 @@ const InternalVolume = () => {
             fetchData.data.internal500
           }, ${sumPercentWithTotal(
             fetchData.data.internal50,
-            fetchData.data.internal50 +
-              fetchData.data.internal500 +
-              fetchData.data.internal1000 +
-              fetchData.data.internal5000 +
-              fetchData.data.internal10000 +
-              fetchData.data.internal50000 +
-              fetchData.data.internalMore
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal500,
           y: fetchData.data.internal500,
@@ -65,13 +57,7 @@ const InternalVolume = () => {
             fetchData.data.internal1000
           }, ${sumPercentWithTotal(
             fetchData.data.internal50,
-            fetchData.data.internal50 +
-              fetchData.data.internal500 +
-              fetchData.data.internal1000 +
-              fetchData.data.internal5000 +
-              fetchData.data.internal10000 +
-              fetchData.data.internal50000 +
-              fetchData.data.internalMore
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal1000,
           y: fetchData.data.internal1000,
@@ -81,13 +67,7 @@ const InternalVolume = () => {
             fetchData.data.internal5000
           }, ${sumPercentWithTotal(
             fetchData.data.internal50,
-            fetchData.data.internal50 +
-              fetchData.data.internal500 +
-              fetchData.data.internal1000 +
-              fetchData.data.internal5000 +
-              fetchData.data.internal10000 +
-              fetchData.data.internal50000 +
-              fetchData.data.internalMore
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal5000,
           y: fetchData.data.internal5000,
@@ -97,13 +77,7 @@ const InternalVolume = () => {
             fetchData.data.internal10000
           }, ${sumPercentWithTotal(
             fetchData.data.internal50,
-            fetchData.data.internal50 +
-              fetchData.data.internal500 +
-              fetchData.data.internal1000 +
-              fetchData.data.internal5000 +
-              fetchData.data.internal10000 +
-              fetchData.data.internal50000 +
-              fetchData.data.internalMore
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal10000,
           y: fetchData.data.internal10000,
@@ -113,13 +87,7 @@ const InternalVolume = () => {
             fetchData.data.internal50000
           }, ${sumPercentWithTotal(
             fetchData.data.internal50,
-            fetchData.data.internal50 +
-              fetchData.data.internal500 +
-              fetchData.data.internal1000 +
-              fetchData.data.internal5000 +
-              fetchData.data.internal10000 +
-              fetchData.data.internal50000 +
-              fetchData.data.internalMore
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal50000,
           y: fetchData.data.internal50000,
@@ -129,13 +97,7 @@ const InternalVolume = () => {
             fetchData.data.internalMore
           }, ${sumPercentWithTotal(
             fetchData.data.internal50,
-            fetchData.data.internal50 +
-              fetchData.data.internal500 +
-              fetchData.data.internal1000 +
-              fetchData.data.internal5000 +
-              fetchData.data.internal10000 +
-              fetchData.data.internal50000 +
-              fetchData.data.internalMore
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internalMore,
           y: fetchData.data.internalMore,

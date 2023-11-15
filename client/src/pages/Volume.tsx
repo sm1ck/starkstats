@@ -3,7 +3,11 @@ import { useTranslation } from "react-i18next";
 import useFetch from "../hooks/useFetch";
 import useTitle from "../hooks/useTitle";
 import Pie from "../components/Pie";
-import { smallColormap, sumPercentWithTotal } from "../utils/common";
+import {
+  smallColormap,
+  sumPercentAllEntries,
+  sumPercentWithTotal,
+} from "../utils/common";
 
 const Volume = () => {
   const { t } = useTranslation();
@@ -34,11 +38,7 @@ const Volume = () => {
               fetchData.data.bridgesVolume.lessThan5of1000
             }, ${sumPercentWithTotal(
               fetchData.data.bridgesVolume.lessThan5of1000,
-              fetchData.data.bridgesVolume.lessThan5of1000 +
-                fetchData.data.bridgesVolume.lessThan1of100 +
-                fetchData.data.bridgesVolume.lessThan1of10 +
-                fetchData.data.bridgesVolume.lessThan1of2 +
-                fetchData.data.bridgesVolume.lessThan1
+              sumPercentAllEntries(fetchData.data.bridgesVolume)
             )}%)`,
             x: fetchData.data.bridgesVolume.lessThan5of1000,
             y: fetchData.data.bridgesVolume.lessThan5of1000,
@@ -48,11 +48,7 @@ const Volume = () => {
               fetchData.data.bridgesVolume.lessThan1of100
             }, ${sumPercentWithTotal(
               fetchData.data.bridgesVolume.lessThan1of100,
-              fetchData.data.bridgesVolume.lessThan5of1000 +
-                fetchData.data.bridgesVolume.lessThan1of100 +
-                fetchData.data.bridgesVolume.lessThan1of10 +
-                fetchData.data.bridgesVolume.lessThan1of2 +
-                fetchData.data.bridgesVolume.lessThan1
+              sumPercentAllEntries(fetchData.data.bridgesVolume)
             )}%)`,
             x: fetchData.data.bridgesVolume.lessThan1of100,
             y: fetchData.data.bridgesVolume.lessThan1of100,
@@ -62,11 +58,7 @@ const Volume = () => {
               fetchData.data.bridgesVolume.lessThan1of10
             }, ${sumPercentWithTotal(
               fetchData.data.bridgesVolume.lessThan1of10,
-              fetchData.data.bridgesVolume.lessThan5of1000 +
-                fetchData.data.bridgesVolume.lessThan1of100 +
-                fetchData.data.bridgesVolume.lessThan1of10 +
-                fetchData.data.bridgesVolume.lessThan1of2 +
-                fetchData.data.bridgesVolume.lessThan1
+              sumPercentAllEntries(fetchData.data.bridgesVolume)
             )}%)`,
             x: fetchData.data.bridgesVolume.lessThan1of10,
             y: fetchData.data.bridgesVolume.lessThan1of10,
@@ -76,11 +68,7 @@ const Volume = () => {
               fetchData.data.bridgesVolume.lessThan1of2
             }, ${sumPercentWithTotal(
               fetchData.data.bridgesVolume.lessThan1of2,
-              fetchData.data.bridgesVolume.lessThan5of1000 +
-                fetchData.data.bridgesVolume.lessThan1of100 +
-                fetchData.data.bridgesVolume.lessThan1of10 +
-                fetchData.data.bridgesVolume.lessThan1of2 +
-                fetchData.data.bridgesVolume.lessThan1
+              sumPercentAllEntries(fetchData.data.bridgesVolume)
             )}%)`,
             x: fetchData.data.bridgesVolume.lessThan1of2,
             y: fetchData.data.bridgesVolume.lessThan1of2,
@@ -90,11 +78,7 @@ const Volume = () => {
               fetchData.data.bridgesVolume.lessThan1
             }, ${sumPercentWithTotal(
               fetchData.data.bridgesVolume.lessThan1,
-              fetchData.data.bridgesVolume.lessThan5of1000 +
-                fetchData.data.bridgesVolume.lessThan1of100 +
-                fetchData.data.bridgesVolume.lessThan1of10 +
-                fetchData.data.bridgesVolume.lessThan1of2 +
-                fetchData.data.bridgesVolume.lessThan1
+              sumPercentAllEntries(fetchData.data.bridgesVolume)
             )}%)`,
             x: fetchData.data.bridgesVolume.lessThan1,
             y: fetchData.data.bridgesVolume.lessThan1,
@@ -111,11 +95,7 @@ const Volume = () => {
               fetchData.data.bridgesWithCexVolume.lessThan5of1000
             }, ${sumPercentWithTotal(
               fetchData.data.bridgesWithCexVolume.lessThan5of1000,
-              fetchData.data.bridgesWithCexVolume.lessThan5of1000 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of100 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of10 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of2 +
-                fetchData.data.bridgesWithCexVolume.lessThan1
+              sumPercentAllEntries(fetchData.data.bridgesWithCexVolume)
             )}%)`,
             x: fetchData.data.bridgesWithCexVolume.lessThan5of1000,
             y: fetchData.data.bridgesWithCexVolume.lessThan5of1000,
@@ -125,11 +105,7 @@ const Volume = () => {
               fetchData.data.bridgesWithCexVolume.lessThan1of100
             }, ${sumPercentWithTotal(
               fetchData.data.bridgesWithCexVolume.lessThan1of100,
-              fetchData.data.bridgesWithCexVolume.lessThan5of1000 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of100 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of10 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of2 +
-                fetchData.data.bridgesWithCexVolume.lessThan1
+              sumPercentAllEntries(fetchData.data.bridgesWithCexVolume)
             )}%)`,
             x: fetchData.data.bridgesWithCexVolume.lessThan1of100,
             y: fetchData.data.bridgesWithCexVolume.lessThan1of100,
@@ -139,11 +115,7 @@ const Volume = () => {
               fetchData.data.bridgesWithCexVolume.lessThan1of10
             }, ${sumPercentWithTotal(
               fetchData.data.bridgesWithCexVolume.lessThan1of10,
-              fetchData.data.bridgesWithCexVolume.lessThan5of1000 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of100 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of10 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of2 +
-                fetchData.data.bridgesWithCexVolume.lessThan1
+              sumPercentAllEntries(fetchData.data.bridgesWithCexVolume)
             )}%)`,
             x: fetchData.data.bridgesWithCexVolume.lessThan1of10,
             y: fetchData.data.bridgesWithCexVolume.lessThan1of10,
@@ -153,11 +125,7 @@ const Volume = () => {
               fetchData.data.bridgesWithCexVolume.lessThan1of2
             }, ${sumPercentWithTotal(
               fetchData.data.bridgesWithCexVolume.lessThan1of2,
-              fetchData.data.bridgesWithCexVolume.lessThan5of1000 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of100 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of10 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of2 +
-                fetchData.data.bridgesWithCexVolume.lessThan1
+              sumPercentAllEntries(fetchData.data.bridgesWithCexVolume)
             )}%)`,
             x: fetchData.data.bridgesWithCexVolume.lessThan1of2,
             y: fetchData.data.bridgesWithCexVolume.lessThan1of2,
@@ -167,11 +135,7 @@ const Volume = () => {
               fetchData.data.bridgesWithCexVolume.lessThan1
             }, ${sumPercentWithTotal(
               fetchData.data.bridgesWithCexVolume.lessThan1,
-              fetchData.data.bridgesWithCexVolume.lessThan5of1000 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of100 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of10 +
-                fetchData.data.bridgesWithCexVolume.lessThan1of2 +
-                fetchData.data.bridgesWithCexVolume.lessThan1
+              sumPercentAllEntries(fetchData.data.bridgesWithCexVolume)
             )}%)`,
             x: fetchData.data.bridgesWithCexVolume.lessThan1,
             y: fetchData.data.bridgesWithCexVolume.lessThan1,

@@ -2,7 +2,7 @@ import { Watch } from "react-loader-spinner";
 import { useTranslation } from "react-i18next";
 import useFetch from "../hooks/useFetch";
 import useTitle from "../hooks/useTitle";
-import { sumPercentWithTotal } from "../utils/common";
+import { sumPercentAllEntries, sumPercentWithTotal } from "../utils/common";
 import Pie from "../components/Pie";
 
 const Balance = () => {
@@ -33,11 +33,7 @@ const Balance = () => {
             fetchData.data.lessThan5of1000
           }, ${sumPercentWithTotal(
             fetchData.data.lessThan5of1000,
-            fetchData.data.lessThan5of1000 +
-              fetchData.data.lessThan1of100 +
-              fetchData.data.lessThan1of10 +
-              fetchData.data.lessThan1of2 +
-              fetchData.data.lessThan1
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.lessThan5of1000,
           y: fetchData.data.lessThan5of1000,
@@ -47,11 +43,7 @@ const Balance = () => {
             fetchData.data.lessThan1of100
           }, ${sumPercentWithTotal(
             fetchData.data.lessThan1of100,
-            fetchData.data.lessThan5of1000 +
-              fetchData.data.lessThan1of100 +
-              fetchData.data.lessThan1of10 +
-              fetchData.data.lessThan1of2 +
-              fetchData.data.lessThan1
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.lessThan1of100,
           y: fetchData.data.lessThan1of100,
@@ -61,11 +53,7 @@ const Balance = () => {
             fetchData.data.lessThan1of10
           }, ${sumPercentWithTotal(
             fetchData.data.lessThan1of10,
-            fetchData.data.lessThan5of1000 +
-              fetchData.data.lessThan1of100 +
-              fetchData.data.lessThan1of10 +
-              fetchData.data.lessThan1of2 +
-              fetchData.data.lessThan1
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.lessThan1of10,
           y: fetchData.data.lessThan1of10,
@@ -75,11 +63,7 @@ const Balance = () => {
             fetchData.data.lessThan1of2
           }, ${sumPercentWithTotal(
             fetchData.data.lessThan1of2,
-            fetchData.data.lessThan5of1000 +
-              fetchData.data.lessThan1of100 +
-              fetchData.data.lessThan1of10 +
-              fetchData.data.lessThan1of2 +
-              fetchData.data.lessThan1
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.lessThan1of2,
           y: fetchData.data.lessThan1of2,
@@ -89,11 +73,7 @@ const Balance = () => {
             fetchData.data.lessThan1
           }, ${sumPercentWithTotal(
             fetchData.data.lessThan1,
-            fetchData.data.lessThan5of1000 +
-              fetchData.data.lessThan1of100 +
-              fetchData.data.lessThan1of10 +
-              fetchData.data.lessThan1of2 +
-              fetchData.data.lessThan1
+            sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.lessThan1,
           y: fetchData.data.lessThan1,
