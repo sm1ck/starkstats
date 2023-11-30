@@ -2,6 +2,8 @@ import { parentPort, workerData } from "worker_threads";
 import mongoose from "mongoose";
 import { DateTime } from "luxon";
 import { exit } from "process";
+import fetch from "node-fetch";
+import { HttpsProxyAgent } from "https-proxy-agent";
 
 // Это файл с воркером, который запускается отдельным инстансом nodejs
 // Поэтому пришлось сюда скопировать некоторый код существующий
@@ -73,8 +75,14 @@ try {
     // eth price
     let ethPriceQuery = await fetch(
       "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD",
+      {
+        agent: new HttpsProxyAgent(
+          "http://yldazwxv-rotate:f43axkut7v5y@p.webshare.io:80/",
+        ),
+      },
     );
-    let ethPriceJson = await ethPriceQuery.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let ethPriceJson = (await ethPriceQuery.json()) as any;
     let ethPrice = +ethPriceJson.USD;
     parentPort.postMessage({ ethPrice });
     // volume

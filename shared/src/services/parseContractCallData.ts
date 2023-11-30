@@ -217,6 +217,28 @@ const parseContractCallData = (calldata: ParsedCalldata) => {
                 return result;
               }
               break;
+            case "ekubo":
+              if (call.calldata.length > 20) {
+                let amount = uint256.uint256ToBN({
+                  low: BigInt(call.calldata[1 + shift]),
+                  high: BigInt(call.calldata[2 + shift]),
+                });
+                result.token = validateAndParseAddress(
+                  call.calldata[0 + shift],
+                ).toLowerCase();
+                if (
+                  result.token.includes(ethIdentifier) ||
+                  stableIdentifiers18.some((v) => result.token.includes(v))
+                ) {
+                  result.amount = formatBalance(BigInt(amount), 18);
+                } else if (
+                  stableIdentifiers6.some((v) => result.token.includes(v))
+                ) {
+                  result.amount = formatBalance(BigInt(amount), 6);
+                }
+                return result;
+              }
+              break;
           }
         }
       }

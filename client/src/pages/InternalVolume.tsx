@@ -46,7 +46,7 @@ const InternalVolume = () => {
           label: `50$ - 500$ (${
             fetchData.data.internal500
           }, ${sumPercentWithTotal(
-            fetchData.data.internal50,
+            fetchData.data.internal500,
             sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal500,
@@ -56,7 +56,7 @@ const InternalVolume = () => {
           label: `500$ - 1000$ (${
             fetchData.data.internal1000
           }, ${sumPercentWithTotal(
-            fetchData.data.internal50,
+            fetchData.data.internal1000,
             sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal1000,
@@ -66,7 +66,7 @@ const InternalVolume = () => {
           label: `1000$ - 5000$ (${
             fetchData.data.internal5000
           }, ${sumPercentWithTotal(
-            fetchData.data.internal50,
+            fetchData.data.internal5000,
             sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal5000,
@@ -76,7 +76,7 @@ const InternalVolume = () => {
           label: `5000$ - 10000$ (${
             fetchData.data.internal10000
           }, ${sumPercentWithTotal(
-            fetchData.data.internal50,
+            fetchData.data.internal10000,
             sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal10000,
@@ -86,7 +86,7 @@ const InternalVolume = () => {
           label: `10000$ - 50000$ (${
             fetchData.data.internal50000
           }, ${sumPercentWithTotal(
-            fetchData.data.internal50,
+            fetchData.data.internal50000,
             sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internal50000,
@@ -96,7 +96,7 @@ const InternalVolume = () => {
           label: `50000$ ${t("more")} (${
             fetchData.data.internalMore
           }, ${sumPercentWithTotal(
-            fetchData.data.internal50,
+            fetchData.data.internalMore,
             sumPercentAllEntries(fetchData.data)
           )}%)`,
           x: fetchData.data.internalMore,

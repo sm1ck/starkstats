@@ -49,6 +49,8 @@ export const protocolIdentifiers = [
   "0x000023c72abdf49dffc85ae3ede714f2168ad384cc67d08524732acea90df325",
   "0x069273566b9fe6cb2fffed3d5a81366c2e62d1d01a16f23bf82ddd8f564bda66",
   "0x05900cfa2b50d53b097cb305d54e249e31f24f881885aae5639b0cd6af4ed298",
+  "0x04b3802058cdd4fc4e352e866e2eef5abde7d62e78116ac68b419654cbebc021",
+  "0x02e0af29598b407c8716b17f6d2795eca1b471413fa03fb145a5e33722184067",
 ];
 export const defaultLimit = 1000;
 export const cexIdentifiers = [
@@ -127,4 +129,9 @@ protocolSelectors.push({
   name: "fibrous2",
   to: "0x03201e8057a781dca378564b9d3bbe9b5b7617fac4ad9d9deaa1024cf63f877e",
   selector: "0x15543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29",
+});
+protocolSelectors.push({
+  name: "ekubo",
+  to: "0x04b3802058cdd4fc4e352e866e2eef5abde7d62e78116ac68b419654cbebc021",
+  selector: "0x240060cdb34fcc260f41eac7474ee1d7c80b7e3607daff9ac67c7ea2ebb1c44",
 });
