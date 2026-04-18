@@ -32,4 +32,13 @@ Deployment is done via docker-compose, containers for server and database are us
 
 ### Author
 
-Telegram: @JanSergeev
+Telegram: @JanSergeev · Maintainer contact: [t.me/haruto_j](https://t.me/haruto_j)
+
+---
+
+## Other Projects by Maintainer
+
+Maintained by [@sm1ck](https://github.com/sm1ck):
+
+- **[HoneyChat](https://honeychat.bot)** — AI companion platform ([GitHub](https://github.com/sm1ck/honeychat) · [@HoneyChatAIBot](https://t.me/HoneyChatAIBot))
+- [layerzero-aptos](https://github.com/sm1ck/layerzero-aptos) · [snapshotvoter](https://github.com/sm1ck/snapshotvoter) · [TestnetBridge](https://github.com/sm1ck/TestnetBridge)
